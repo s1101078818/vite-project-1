@@ -47,3 +47,8 @@ export const addAccessProvider = (params: any) => {
 export const updateAccessProvider = (params: any) =>{
     return axios.post('/UpdateAccessProvider', params);
 }
+
+// 获得SaaS模板
+export const getSaaSAccessProviderTemplate = () => {
+    return axios.get('/GetSaaSAccessProviderTemplate');
+}

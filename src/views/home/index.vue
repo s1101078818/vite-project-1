@@ -6,8 +6,9 @@
                {{ buttonName }}
                <template #dropdown>
                   <el-dropdown-menu>
-                     <el-dropdown-item v-for="provider in providers" :key="provider.id" @click="handleClick(provider)">
-                        {{ provider.id }}
+                     <el-dropdown-item v-for="provider in providers" :key="provider.tenantId"
+                        @click="handleClick(provider)">
+                        {{ provider.tenantId }}
                      </el-dropdown-item>
                   </el-dropdown-menu>
                </template>
@@ -16,8 +17,7 @@
          </el-header>
          <el-main class="main">
             <div @click="handleClickPicture" v-if="!showForm">
-               <img src="../../assets/login.jpeg" style="width: 600px;"
-                  alt="Main Image" />
+               <img src="../../assets/login.jpeg" style="width: 600px;" alt="Main Image" />
             </div>
             <h3 v-if="!providers.length && !showText">该接入商还未添加过配置，点击添加新配置</h3>
             <!-- 编辑的表单 -->
@@ -236,7 +236,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import { getAccessProvider, getAllAccessProvider, addAccessProvider, updateAccessProvider } from '../../api/home';
+import { getAccessProvider, getAllAccessProvider, addAccessProvider, updateAccessProvider, getSaaSAccessProviderTemplate } from '../../api/home';
 import { toRaw } from 'vue';
 
 const showForm = ref(false)
@@ -298,8 +298,32 @@ const addForm = ref({
    webApiClientId: '',
 })
 
+const SaaSAccessProviderTemplate = ref({
+   azureTenantId: '',
+   category: '',
+   deployType: 1,
+   graphClientId: '',
+   graphClientSecret: '',
+   isEnable: true,
+   policies: {
+      apiScopes: [],
+      authorities_editProfile_authority: '',
+      authorities_signUpSignIn_authority: '',
+      authorityDomain: '',
+      clientId: '',
+      names_editProfile: '',
+      names_signUpSignIn: ''
+   },
+   spaApiScopes: [],
+   spaBindDomain: '',
+   spaClientId: '',
+   tenantId: '',
+   webApiAud: '',
+   webApiClientId: '',
+})
+
 interface Provider {
-   id: string;
+   tenantId: string;
 }
 
 const providers = reactive<Provider[]>([])
@@ -322,10 +346,10 @@ const handleClickPicture = () => {
 
 const handleClick = (data: any) => {
    console.log("点击切换");
-   console.log(data.id);
+   console.log(data.tenantId);
    showForm.value = true
-   buttonName.value = data.id
-   GetAccessProvider(data.id);
+   buttonName.value = data.tenantId
+   GetAccessProvider(data.tenantId);
 
    // 如果form中的deploymentType为1，则表单所有选项禁止输入
    // if (editForm.value.deployType == 1) {
@@ -436,16 +460,16 @@ const AddAccessProvider = (data: any) => {
       console.log(response);
       // 在这里执行你的操作
       // 将response.data赋值给form
-      
+
       if (response.status == 200) {
-       
+
          ElMessage.success('新增成功');
          // 等2秒刷新页面
          setTimeout(() => {
             location.reload();
          }, 2000);
       } else {
-        
+
          ElMessage.error('新增失败');
       }
    }).catch(error => {
@@ -458,16 +482,16 @@ const UpdateAccessProvider = async (data: any) => {
       console.log(response);
       // 在这里执行你的操作
       // 将response.data赋值给form
-   
+
       if (response.status == 200) {
-    
+
          ElMessage.success('修改成功');
          // 等2秒刷新页面
          setTimeout(() => {
             location.reload();
          }, 2000);
       } else {
-       
+
          ElMessage.error('修改失败');
       }
    }).catch(error => {
@@ -529,7 +553,7 @@ const GetAllAccessProvider = async () => {
       // 将response.data赋值给form
       for (let i = 0; i < response.data.length; i++) {
          providers.push({
-            id: response.data[i].id
+            tenantId: response.data[i].tenantId
          });
       }
 
@@ -564,9 +588,46 @@ const handleAdd = () => {
    addForm.value.deployType = 0;
 }
 
+const GetSaaSAccessProviderTemplate = () => {
+   getSaaSAccessProviderTemplate().then(response => {
+      console.log("这里是SaaS模板");
+      console.log(response.data);
+      // 在这里执行你的操作
+      // 将response.data赋值给form
+      SaaSAccessProviderTemplate.value = {
+         azureTenantId: response.data.azureTenantId,
+         category: response.data.category,
+         deployType: response.data.deployType,
+         graphClientId: response.data.graphClientId,
+         graphClientSecret: response.data.graphClientSecret,
+         id: response.data.id,
+         isEnable: response.data.isEnable,
+         policies: {
+            apiScopes: response.data.policies.apiScopes[0],
+            authorities_editProfile_authority: response.data.policies.authorities_editProfile_authority,
+            authorities_signUpSignIn_authority: response.data.policies.authorities_signUpSignIn_authority,
+            authorityDomain: response.data.policies.authorityDomain,
+            clientId: response.data.policies.clientId,
+            names_editProfile: response.data.policies.names_editProfile,
+            names_signUpSignIn: response.data.policies.names_signUpSignIn
+         },
+         spaApiScopes: response.data.spaApiScopes[0],
+         spaBindDomain: response.data.spaBindDomain,
+         spaClientId: response.data.spaClientId,
+         tenantId: response.data.tenantId,
+         webApiAud: response.data.webApiAud,
+         webApiClientId: response.data.webApiClientId
+      }
+      console.log("你在看哪里");
+      console.log(SaaSAccessProviderTemplate.value);
+   })
+
+}
+
 onMounted(() => {
    GetAllAccessProvider();
    // GetAccessProvider('1');
+   GetSaaSAccessProviderTemplate();
 })
 
 </script>
