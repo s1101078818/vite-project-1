@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { log } from 'console';
 
 // 创建axios实例
 const instance = axios.create({

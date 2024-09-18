@@ -436,13 +436,16 @@ const AddAccessProvider = (data: any) => {
       console.log(response);
       // 在这里执行你的操作
       // 将response.data赋值给form
-      if (response.code == 200) {
+      
+      if (response.status == 200) {
+       
          ElMessage.success('新增成功');
          // 等2秒刷新页面
          setTimeout(() => {
             location.reload();
          }, 2000);
       } else {
+        
          ElMessage.error('新增失败');
       }
    }).catch(error => {
@@ -455,13 +458,16 @@ const UpdateAccessProvider = async (data: any) => {
       console.log(response);
       // 在这里执行你的操作
       // 将response.data赋值给form
-      if (response.code == 200) {
+   
+      if (response.status == 200) {
+    
          ElMessage.success('修改成功');
          // 等2秒刷新页面
          setTimeout(() => {
             location.reload();
          }, 2000);
       } else {
+       
          ElMessage.error('修改失败');
       }
    }).catch(error => {

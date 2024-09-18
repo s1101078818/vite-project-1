@@ -15,4 +15,4 @@ type UserInfo = {
     userPrincipalName?: string
 };
 
-export default UserInfo;
+export { UserInfo };
