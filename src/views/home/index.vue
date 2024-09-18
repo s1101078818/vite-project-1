@@ -561,7 +561,7 @@ const handleChange1 = () => {
 const handleAdd = () => {
    showForm.value = true;
    isAdd.value = true;
-   addForm.value.deployType = 1;
+   addForm.value.deployType = 0;
 }
 
 onMounted(() => {
