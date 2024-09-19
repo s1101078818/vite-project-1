@@ -574,6 +574,30 @@ const handleChange = () => {
    // 如果form.deployType的值为'1'，则为独立部署，则disabled为false，否则为true
    if (editForm.value.deployType === 1) {
       // 清空表单
+      editForm.value = {
+         azureTenantId: '',
+         category: '',
+         deployType: 1,
+         graphClientId: '',
+         graphClientSecret: '',
+         isEnable: true,
+         id: '',
+         policies: {
+            apiScopes: [],
+            authorities_editProfile_authority: '',
+            authorities_signUpSignIn_authority: '',
+            authorityDomain: '',
+            clientId: '',
+            names_editProfile: '',
+            names_signUpSignIn: ''
+         },
+         spaApiScopes: [],
+         spaBindDomain: '',
+         spaClientId: '',
+         tenantId: '',
+         webApiAud: '',
+         webApiClientId: '',
+      }
       disabled.value = false;
       // 如果将独立部署改为SaaS，那么禁用所有输入框并且将模板的值赋值给form
    } else if (editForm.value.deployType === 0) {
