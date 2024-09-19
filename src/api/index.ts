@@ -16,8 +16,6 @@ instance.interceptors.request.use(
     config => {
         // 在发送请求之前做些什么，比如添加token
         const token = sessionStorage.getItem("user_impersonation_token");
-        console.log("安徽读卡汉武帝卡卡风格是客服更何况是东北更何况是客服思考过后色冯绍峰色色")
-        console.log(sessionStorage.getItem("user_impersonation_token"))
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

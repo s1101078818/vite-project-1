@@ -573,8 +573,34 @@ const GetAccessProvider = (tenantId: string) => {
 const handleChange = () => {
    // 如果form.deployType的值为'1'，则为独立部署，则disabled为false，否则为true
    if (editForm.value.deployType === 1) {
+      // 清空表单
       disabled.value = false;
-   } else {
+      // 如果将独立部署改为SaaS，那么禁用所有输入框并且将模板的值赋值给form
+   } else if (editForm.value.deployType === 0) {
+      editForm.value = {
+         azureTenantId: SaaSAccessProviderTemplate.value.azureTenantId,
+         category: SaaSAccessProviderTemplate.value.category,
+         deployType: SaaSAccessProviderTemplate.value.deployType,
+         graphClientId: SaaSAccessProviderTemplate.value.graphClientId,
+         graphClientSecret: SaaSAccessProviderTemplate.value.graphClientSecret,
+         isEnable: SaaSAccessProviderTemplate.value.isEnable,
+         id: '',
+         policies: {
+            apiScopes: SaaSAccessProviderTemplate.value.policies.apiScopes[0],
+            authorities_editProfile_authority: SaaSAccessProviderTemplate.value.policies.authorities_editProfile_authority,
+            authorities_signUpSignIn_authority: SaaSAccessProviderTemplate.value.policies.authorities_signUpSignIn_authority,
+            authorityDomain: SaaSAccessProviderTemplate.value.policies.authorityDomain,
+            clientId: SaaSAccessProviderTemplate.value.policies.clientId,
+            names_editProfile: SaaSAccessProviderTemplate.value.policies.names_editProfile,
+            names_signUpSignIn: SaaSAccessProviderTemplate.value.policies.names_signUpSignIn
+         },
+         spaApiScopes: SaaSAccessProviderTemplate.value.spaApiScopes[0],
+         spaBindDomain: SaaSAccessProviderTemplate.value.spaBindDomain,
+         spaClientId: SaaSAccessProviderTemplate.value.spaClientId,
+         tenantId: editForm.value.tenantId,
+         webApiAud: SaaSAccessProviderTemplate.value.webApiAud,
+         webApiClientId: SaaSAccessProviderTemplate.value.webApiClientId
+      }
       disabled.value = true;
    }
 }
