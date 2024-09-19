@@ -12,22 +12,32 @@ const routes = [
         path: '/',
         component: Layout,
         children: [{
-            path: "/home",
-            name: "Home",
+            path: "/B2C",
+            name: "B2C",
             meta: {
-                title: '主页',
+                title: 'B2C',
                 icon: 'House',
                 requireAuth: true,
             },
-            /** 在src/views 文件下创建home文件 */
-            component: () => import("../views/home/index.vue"),
+            component: () => import("../views/home/B2C.vue"),
+        },
+        {
+            path: "/B2B",
+            name: "B2B",
+            meta: {
+                title: 'B2B',
+                icon: 'House',
+                requireAuth: true,
+            },
+            component: () => import("../views/home/B2B.vue"),
+
         }]
     },
     {
         path: '/failed',
         name: 'Failed',
         component: () => import("../components/Failed.vue"),
-      }
+    }
 ]
 
 const router = createRouter({

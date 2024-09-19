@@ -15,15 +15,16 @@
                   </el-dropdown-menu>
                </template>
             </el-dropdown>
-            <el-button type="primary" @click="handleAdd">新增</el-button>
+            <!-- <el-button type="primary" @click="handleAdd">新增</el-button> -->
          </el-header>
          <el-main class="main">
-            <div @click="handleClickPicture" v-if="!showForm">
+            <!-- <div @click="handleClickPicture" v-if="!showForm">
                <img src="../../assets/login.jpeg" style="width: 600px;" alt="Main Image" />
             </div>
-            <h3 v-if="!providers.length && !showText">该接入商还未添加过配置，点击添加新配置</h3>
+            <h3 v-if="!providers.length && !showText">该接入商还未添加过配置，点击添加新配置</h3> -->
             <!-- 编辑的表单 -->
-            <el-form v-else-if="showForm && !isAdd" :disabled="disabled">
+            <!-- <el-form v-else-if="showForm && !isAdd" :disabled="disabled"> -->
+            <el-form :disabled="disabled">
                <h2>编辑B2C配置</h2>
                <!-- 表单内容 -->
                <el-row :gutter="20">
@@ -74,6 +75,9 @@
                      </el-form-item>
                      <el-form-item label="WebApiClientId">
                         <el-input v-model="editForm.webApiClientId"></el-input>
+                     </el-form-item>
+                     <el-form-item label="ApplicationType">
+                        <el-input v-model="editForm.applicationType"></el-input>
                      </el-form-item>
                   </el-col>
                </el-row>
@@ -127,9 +131,8 @@
                </el-form>
             </el-form>
             <!-- 新增的表单 -->
-            <el-form v-if="showForm && isAdd" :disabled="disabled1">
+            <!-- <el-form v-if="showForm && isAdd" :disabled="disabled1">
                <h2>新增B2C配置</h2>
-               <!-- 表单内容 -->
                <el-row :gutter="20">
                   <el-col :span="12">
                      <el-form>
@@ -160,10 +163,10 @@
                      <el-form-item label="TenantId">
                         <el-input v-model="addForm.tenantId"></el-input>
                      </el-form-item>
-                     <!-- 其他表单项 -->
+                   
                   </el-col>
                   <el-col :span="12">
-                     <!-- 其他表单项 -->
+                   
                      <el-form-item label="SPAApiScopes">
                         <el-input v-model="addForm.spaApiScopes"></el-input>
                      </el-form-item>
@@ -197,7 +200,7 @@
                               <el-input v-model="addForm.policies.apiScopes"></el-input>
                            </el-form-item>
 
-                           <!-- 表单内容 -->
+                       
                         </el-form>
                      </el-card>
                   </el-col>
@@ -210,7 +213,7 @@
                            <el-form-item label="names_editProfile">
                               <el-input v-model="addForm.policies.names_editProfile"></el-input>
                            </el-form-item>
-                           <!-- 表单内容 -->
+                       
                         </el-form>
                      </el-card>
                   </el-col>
@@ -229,10 +232,9 @@
                      <el-button @click="cancelAddForm">取消</el-button>
                   </el-form-item>
                </el-form>
-            </el-form>
+            </el-form> -->
          </el-main>
       </el-container>
-
    </div>
 </template>
 
@@ -250,7 +252,6 @@ const disabled = ref(false)
 const disabled1 = ref(false)
 
 const isAdd = ref(false)
-const id = ref('')
 
 const editForm = ref({
    azureTenantId: '',
@@ -275,6 +276,7 @@ const editForm = ref({
    tenantId: '',
    webApiAud: '',
    webApiClientId: '',
+   applicationType: ''
 })
 
 const addForm = ref({
@@ -323,6 +325,7 @@ const SaaSAccessProviderTemplate = ref({
    tenantId: '',
    webApiAud: '',
    webApiClientId: '',
+   applicationType: ''
 })
 
 interface Provider {
@@ -333,24 +336,24 @@ interface Provider {
 const providers = reactive<Provider[]>([])
 
 // 点击图片的方法
-const handleClickPicture = () => {
-   // 如果有接入商，但未选择，则不做处理
-   if (providers.length > 0 && buttonName.value === '请选择接入商') {
-      return
-   }
-   showPicture.value = false
-   showForm.value = true
-   showText.value = true
-   isAdd.value = true
-   // 判断radio的值，如果为0，则表单所有选项禁止输入
-   if (editForm.value.deployType === 0) {
-      disabled.value = true
-   }
-}
+// const handleClickPicture = () => {
+//    // 如果有接入商，但未选择，则不做处理
+//    if (providers.length > 0 && buttonName.value === '请选择接入商') {
+//       return
+//    }
+//    showPicture.value = false
+//    showForm.value = true
+//    showText.value = true
+//    isAdd.value = true
+//    // 判断radio的值，如果为0，则表单所有选项禁止输入
+//    if (editForm.value.deployType === 0) {
+//       disabled.value = true
+//    }
+// }
 
 const handleClick = (data: any) => {
-   console.log("点击切换");
-   console.log(data.tenantId);
+   // console.log("点击切换");
+   // console.log(data.tenantId);
    showForm.value = true
    buttonName.value = data.name
    GetAccessProvider(data.tenantId);
@@ -364,7 +367,7 @@ const handleClick = (data: any) => {
 
 const submitForm = () => {
    // 处理表单提交逻辑
-   console.log(toRaw(editForm.value));
+   // console.log(toRaw(editForm.value));
    showForm.value = false
    // 新增逻辑
    // toRaw(form.value).id = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -374,28 +377,28 @@ const submitForm = () => {
    // 修改逻辑
    // toRaw(form.value).id = '1'
 
-   if (isAdd.value) {
-      // toRaw(editForm.value).id = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      addForm.value.policies.apiScopes = [addForm.value.policies.apiScopes] as any;
-      addForm.value.spaApiScopes = [addForm.value.spaApiScopes] as any;
-      addForm.value.category = 'AccessProvider';
+   // if (isAdd.value) {
+   //    // toRaw(editForm.value).id = Math.random().toString(36).substring(2) + Date.now().toString(36);
+   //    addForm.value.policies.apiScopes = [addForm.value.policies.apiScopes] as any;
+   //    addForm.value.spaApiScopes = [addForm.value.spaApiScopes] as any;
+   //    addForm.value.category = 'AccessProvider';
 
-      AddAccessProvider(JSON.stringify(toRaw(addForm.value)));
-   } else {
-      // toRaw(editForm.value).id = '1'
-      // apiScopes和spaApiScopes需要处理成数组
-      editForm.value.policies.apiScopes = [editForm.value.policies.apiScopes] as any;
-      editForm.value.spaApiScopes = [editForm.value.spaApiScopes] as any;
-      editForm.value.category = 'AccessProvider';
-      if (disabled.value) {
-         editForm.value.deployType = 0
-      }
-      else {
-         editForm.value.deployType = 1
-      }
-
-      UpdateAccessProvider(JSON.stringify(toRaw(editForm.value)));
+   //    AddAccessProvider(JSON.stringify(toRaw(addForm.value)));
+   // } else {
+   // toRaw(editForm.value).id = '1'
+   // apiScopes和spaApiScopes需要处理成数组
+   editForm.value.policies.apiScopes = [editForm.value.policies.apiScopes] as any;
+   editForm.value.spaApiScopes = [editForm.value.spaApiScopes] as any;
+   editForm.value.category = 'AccessProvider';
+   if (disabled.value) {
+      editForm.value.deployType = 0
    }
+   else {
+      editForm.value.deployType = 1
+   }
+
+   UpdateAccessProvider(JSON.stringify(toRaw(editForm.value)));
+   // }
 }
 
 const cancelEditForm = () => {
@@ -425,66 +428,67 @@ const cancelEditForm = () => {
       tenantId: '',
       webApiAud: '',
       webApiClientId: '',
+      applicationType: '',
    }
    buttonName.value = '请选择接入商'
 }
 
 
-const cancelAddForm = () => {
-   // 处理表单取消逻辑
-   showForm.value = false
-   // 清空表单
-   addForm.value = {
-      azureTenantId: '',
-      category: '',
-      deployType: 1,
-      graphClientId: '',
-      graphClientSecret: '',
-      isEnable: true,
-      policies: {
-         apiScopes: [],
-         authorities_editProfile_authority: '',
-         authorities_signUpSignIn_authority: '',
-         authorityDomain: '',
-         clientId: '',
-         names_editProfile: '',
-         names_signUpSignIn: ''
-      },
-      spaApiScopes: [],
-      spaBindDomain: '',
-      spaClientId: '',
-      tenantId: '',
-      webApiAud: '',
-      webApiClientId: '',
-   }
-   buttonName.value = '请选择接入商'
-}
+// const cancelAddForm = () => {
+//    // 处理表单取消逻辑
+//    showForm.value = false
+//    // 清空表单
+//    addForm.value = {
+//       azureTenantId: '',
+//       category: '',
+//       deployType: 1,
+//       graphClientId: '',
+//       graphClientSecret: '',
+//       isEnable: true,
+//       policies: {
+//          apiScopes: [],
+//          authorities_editProfile_authority: '',
+//          authorities_signUpSignIn_authority: '',
+//          authorityDomain: '',
+//          clientId: '',
+//          names_editProfile: '',
+//          names_signUpSignIn: ''
+//       },
+//       spaApiScopes: [],
+//       spaBindDomain: '',
+//       spaClientId: '',
+//       tenantId: '',
+//       webApiAud: '',
+//       webApiClientId: '',
+//    }
+//    buttonName.value = '请选择接入商'
+// }
 
-const AddAccessProvider = (data: any) => {
-   addAccessProvider(data).then(response => {
-      console.log(response);
-      // 在这里执行你的操作
-      // 将response.data赋值给form
+// const AddAccessProvider = (data: any) => {
+//    addAccessProvider(data).then(response => {
+//       console.log(response);
+//       // 在这里执行你的操作
+//       // 将response.data赋值给form
 
-      if (response.status == 200) {
+//       if (response.status == 200) {
 
-         ElMessage.success('新增成功');
-         // 等2秒刷新页面
-         setTimeout(() => {
-            // location.reload();
-         }, 2000);
-      } else {
+//          ElMessage.success('新增成功');
+//          // 等2秒刷新页面
+//          setTimeout(() => {
+//             // location.reload();
+//          }, 2000);
+//       } else {
 
-         ElMessage.error('新增失败');
-      }
-   }).catch(error => {
-      console.log(error);
-   })
-}
+//          ElMessage.error('新增失败');
+//       }
+//    }).catch(error => {
+//       console.log(error);
+//    })
+// }
 
 const UpdateAccessProvider = async (data: any) => {
    updateAccessProvider(data).then(response => {
-      console.log(response);
+      // console.log(response);
       // 在这里执行你的操作
       // 将response.data赋值给form
 
@@ -493,7 +497,7 @@ const UpdateAccessProvider = async (data: any) => {
          ElMessage.success('修改成功');
          // 等2秒刷新页面
          setTimeout(() => {
-            // location.reload();
+            location.reload();
          }, 2000);
       } else {
 
@@ -536,7 +540,8 @@ const GetAccessProvider = (tenantId: string) => {
          spaClientId: response.data.spaClientId,
          tenantId: tenantId,
          webApiAud: response.data.webApiAud,
-         webApiClientId: response.data.webApiClientId
+         webApiClientId: response.data.webApiClientId,
+         applicationType: response.data.applicationType,
       }
       if (editForm.value.deployType == 1) {
          disabled.value = false
@@ -597,6 +602,7 @@ const handleChange = () => {
          tenantId: '',
          webApiAud: '',
          webApiClientId: '',
+         applicationType: ''
       }
       disabled.value = false;
       // 如果将独立部署改为SaaS，那么禁用所有输入框并且将模板的值赋值给form
@@ -623,7 +629,8 @@ const handleChange = () => {
          spaClientId: SaaSAccessProviderTemplate.value.spaClientId,
          tenantId: editForm.value.tenantId,
          webApiAud: SaaSAccessProviderTemplate.value.webApiAud,
-         webApiClientId: SaaSAccessProviderTemplate.value.webApiClientId
+         webApiClientId: SaaSAccessProviderTemplate.value.webApiClientId,
+         applicationType: SaaSAccessProviderTemplate.value.applicationType
       }
       disabled.value = true;
    }
@@ -645,8 +652,8 @@ const handleAdd = () => {
 
 const GetSaaSAccessProviderTemplate = () => {
    getSaaSAccessProviderTemplate().then(response => {
-      console.log("这里是SaaS模板");
-      console.log(response.data);
+      // console.log("这里是SaaS模板");
+      // console.log(response.data);
       // 在这里执行你的操作
       // 将response.data赋值给form
       SaaSAccessProviderTemplate.value = {
@@ -670,10 +677,9 @@ const GetSaaSAccessProviderTemplate = () => {
          spaClientId: response.data.spaClientId,
          tenantId: response.data.tenantId,
          webApiAud: response.data.webApiAud,
-         webApiClientId: response.data.webApiClientId
+         webApiClientId: response.data.webApiClientId,
+         applicationType: response.data.applicationType
       }
-      console.log("你在看哪里");
-      console.log(SaaSAccessProviderTemplate.value);
    })
 }
 
@@ -689,8 +695,6 @@ const getSaaSTenantList = async () => {
       }
    });
    instance.post('', {}).then(response => {
-      console.log("这里是SaaS租户列表");
-      console.log(response.data);
       // 在这里执行你的操作
       // 将response.data赋值给providers
       for (let i = 0; i < response.data.data.length; i++) {
@@ -699,7 +703,6 @@ const getSaaSTenantList = async () => {
             name: response.data.data[i].name,
          });
       }
-      console.log(providers);
    })
 }
 

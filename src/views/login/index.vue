@@ -45,7 +45,7 @@ async function getGraphData() {
     });
     if (inProgress.value === InteractionStatus.None) {
         const graphData = await callMsGraph(response.accessToken);
-        console.log(graphData);
+        // console.log(graphData);
         sessionStorage.setItem("accessToken", response.accessToken);
         sessionStorage.setItem("graphData", JSON.stringify(graphData));
         state.data = graphData;
@@ -57,11 +57,11 @@ async function getGraphData() {
             // getToekn();
             // 等2秒
             setTimeout(() => {
-                router.push("/home");
+                router.push("/B2C");
             }, 2000)
 
-            console.log("这里是1111111111111");
-            console.log(sessionStorage.getItem("user_impersonation_token"));
+            // console.log("这里是1111111111111");
+            // console.log(sessionStorage.getItem("user_impersonation_token"));
         }
         else {
             alert("登录失败，请重试");
@@ -98,9 +98,9 @@ const getNewToken = () => {
             // Acquire token silent success
             let accessToken = accessTokenResponse.accessToken;
             // Call your API with token
-            console.log("哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈");
+            // console.log("哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈");
             sessionStorage.setItem("user_impersonation_token", accessToken);
-            console.log(sessionStorage.getItem("user_impersonation_token"));
+            // console.log(sessionStorage.getItem("user_impersonation_token"));
 
         })
         .catch(function (error) {
@@ -117,7 +117,7 @@ const getNewToken = () => {
                         // Call your API with token
 
                         sessionStorage.setItem("user_impersonation_token", accessToken);
-                        console.log(accessToken);
+                        // console.log(accessToken);
                     })
                     .catch(function (error) {
                         // Acquire token interactive failure
@@ -125,7 +125,7 @@ const getNewToken = () => {
                         console.log(error);
                     });
             }
-            console.log("傻逼");
+            // console.log("傻逼");
 
             console.log(error);
         });
