@@ -255,7 +255,6 @@ const editForm = ref({
    deployType: 1,
    graphClientId: '',
    graphClientSecret: '',
-   id: '',
    isEnable: true,
    policies: {
       apiScopes: [],
@@ -403,7 +402,6 @@ const cancelEditForm = () => {
       deployType: 1,
       graphClientId: '',
       graphClientSecret: '',
-      id: '',
       isEnable: true,
       policies: {
          apiScopes: [],
@@ -515,7 +513,6 @@ const GetAccessProvider = (id: string) => {
          deployType: response.data.deployType,
          graphClientId: response.data.graphClientId,
          graphClientSecret: response.data.graphClientSecret,
-         id: response.data.id,
          isEnable: response.data.isEnable,
          policies: {
             apiScopes: response.data.policies.apiScopes[0],
@@ -600,7 +597,6 @@ const GetSaaSAccessProviderTemplate = () => {
          deployType: response.data.deployType,
          graphClientId: response.data.graphClientId,
          graphClientSecret: response.data.graphClientSecret,
-         id: response.data.id,
          isEnable: response.data.isEnable,
          policies: {
             apiScopes: response.data.policies.apiScopes[0],
