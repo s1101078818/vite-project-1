@@ -6,10 +6,12 @@
                {{ buttonName }}
                <template #dropdown>
                   <el-dropdown-menu>
-                     <el-dropdown-item v-for="provider in providers" :key="provider.tenantId"
-                        @click="handleClick(provider)">
-                        {{ provider.tenantId }}
-                     </el-dropdown-item>
+                     <el-scrollbar height="400px">
+                        <el-dropdown-item v-for="provider in providers" :key="provider.tenantId"
+                           @click="handleClick(provider)">
+                           {{ provider.name }}
+                        </el-dropdown-item>
+                     </el-scrollbar>
                   </el-dropdown-menu>
                </template>
             </el-dropdown>
@@ -29,8 +31,8 @@
                      <el-form>
                         <el-form-item label="部署类型">
                            <el-radio-group v-model="editForm.deployType" @change="handleChange">
-                              <el-radio :value=1>SaaS</el-radio>
-                              <el-radio :value=0>独立部署</el-radio>
+                              <el-radio :value=0>SaaS</el-radio>
+                              <el-radio :value=1>独立部署</el-radio>
                            </el-radio-group>
                         </el-form-item>
                      </el-form>
@@ -133,8 +135,8 @@
                      <el-form>
                         <el-form-item label="部署类型">
                            <el-radio-group v-model="addForm.deployType" @change="handleChange1">
-                              <el-radio :value=1>SaaS</el-radio>
-                              <el-radio :value=0>独立部署</el-radio>
+                              <el-radio :value=0>SaaS</el-radio>
+                              <el-radio :value=1>独立部署</el-radio>
                            </el-radio-group>
                         </el-form-item>
                      </el-form>
@@ -236,8 +238,9 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import { getAccessProvider, getAllAccessProvider, addAccessProvider, updateAccessProvider, getSaaSAccessProviderTemplate } from '../../api/home';
+import { getAccessProvider, addAccessProvider, updateAccessProvider, getSaaSAccessProviderTemplate } from '../../api/home';
 import { toRaw } from 'vue';
+import axios from 'axios';
 
 const showForm = ref(false)
 const showPicture = ref(true)
@@ -256,6 +259,7 @@ const editForm = ref({
    graphClientId: '',
    graphClientSecret: '',
    isEnable: true,
+   id: '',
    policies: {
       apiScopes: [],
       authorities_editProfile_authority: '',
@@ -323,6 +327,7 @@ const SaaSAccessProviderTemplate = ref({
 
 interface Provider {
    tenantId: string;
+   name: string;
 }
 
 const providers = reactive<Provider[]>([])
@@ -337,8 +342,8 @@ const handleClickPicture = () => {
    showForm.value = true
    showText.value = true
    isAdd.value = true
-   // 判断radio的值，如果为1，则表单所有选项禁止输入
-   if (editForm.value.deployType === 1) {
+   // 判断radio的值，如果为0，则表单所有选项禁止输入
+   if (editForm.value.deployType === 0) {
       disabled.value = true
    }
 }
@@ -347,7 +352,7 @@ const handleClick = (data: any) => {
    console.log("点击切换");
    console.log(data.tenantId);
    showForm.value = true
-   buttonName.value = data.tenantId
+   buttonName.value = data.name
    GetAccessProvider(data.tenantId);
 
    // 如果form中的deploymentType为1，则表单所有选项禁止输入
@@ -381,11 +386,12 @@ const submitForm = () => {
       // apiScopes和spaApiScopes需要处理成数组
       editForm.value.policies.apiScopes = [editForm.value.policies.apiScopes] as any;
       editForm.value.spaApiScopes = [editForm.value.spaApiScopes] as any;
+      editForm.value.category = 'AccessProvider';
       if (disabled.value) {
-         editForm.value.deployType = 1
+         editForm.value.deployType = 0
       }
       else {
-         editForm.value.deployType = 0
+         editForm.value.deployType = 1
       }
 
       UpdateAccessProvider(JSON.stringify(toRaw(editForm.value)));
@@ -403,6 +409,7 @@ const cancelEditForm = () => {
       graphClientId: '',
       graphClientSecret: '',
       isEnable: true,
+      id: '',
       policies: {
          apiScopes: [],
          authorities_editProfile_authority: '',
@@ -464,7 +471,7 @@ const AddAccessProvider = (data: any) => {
          ElMessage.success('新增成功');
          // 等2秒刷新页面
          setTimeout(() => {
-            location.reload();
+            // location.reload();
          }, 2000);
       } else {
 
@@ -486,7 +493,7 @@ const UpdateAccessProvider = async (data: any) => {
          ElMessage.success('修改成功');
          // 等2秒刷新页面
          setTimeout(() => {
-            location.reload();
+            // location.reload();
          }, 2000);
       } else {
 
@@ -497,8 +504,8 @@ const UpdateAccessProvider = async (data: any) => {
    })
 }
 
-const GetAccessProvider = (id: string) => {
-   getAccessProvider(id).then(response => {
+const GetAccessProvider = (tenantId: string) => {
+   getAccessProvider(tenantId).then(response => {
       // 在这里执行你的操作
       // 如果response.data中isEnable为ture，则改成1
       // if (response.data.isEnable) {
@@ -514,6 +521,7 @@ const GetAccessProvider = (id: string) => {
          graphClientId: response.data.graphClientId,
          graphClientSecret: response.data.graphClientSecret,
          isEnable: response.data.isEnable,
+         id: response.data.id,
          policies: {
             apiScopes: response.data.policies.apiScopes[0],
             authorities_editProfile_authority: response.data.policies.authorities_editProfile_authority,
@@ -526,14 +534,14 @@ const GetAccessProvider = (id: string) => {
          spaApiScopes: response.data.spaApiScopes[0],
          spaBindDomain: response.data.spaBindDomain,
          spaClientId: response.data.spaClientId,
-         tenantId: response.data.tenantId,
+         tenantId: tenantId,
          webApiAud: response.data.webApiAud,
          webApiClientId: response.data.webApiClientId
       }
       if (editForm.value.deployType == 1) {
-         disabled.value = true
-      } else {
          disabled.value = false
+      } else {
+         disabled.value = true
       }
       isAdd.value = false
    }).catch(error => {
@@ -542,32 +550,32 @@ const GetAccessProvider = (id: string) => {
    });
 }
 
-const GetAllAccessProvider = async () => {
-   getAllAccessProvider().then(response => {
-      console.log("这里");
-      console.log(response.data);
-      // 在这里执行你的操作
-      // 将response.data赋值给form
-      for (let i = 0; i < response.data.length; i++) {
-         providers.push({
-            tenantId: response.data[i].tenantId
-         });
-      }
-
-      console.log("这里");
-      console.log(providers);
-   }).catch(error => {
-      console.error('There was a problem with your fetch operation:', error);
-      // 在这里处理错误
-   });
-}
+// const GetAllAccessProvider = async () => {
+//    getAllAccessProvider().then(response => {
+//       console.log("这里");
+//       console.log(response.data);
+//       // 在这里执行你的操作
+//       // 将response.data赋值给form
+//       for (let i = 0; i < response.data.length; i++) {
+//          providers.push({
+//             tenantId: response.data[i].tenantId,
+//             name: ''
+//          });
+//       }
+//       console.log("这里");
+//       console.log(providers);
+//    }).catch(error => {
+//       console.error('There was a problem with your fetch operation:', error);
+//       // 在这里处理错误
+//    });
+// }
 
 const handleChange = () => {
-   // 如果form.deployType的值为'1'，则disabled为true，否则为false
+   // 如果form.deployType的值为'1'，则为独立部署，则disabled为false，否则为true
    if (editForm.value.deployType === 1) {
-      disabled.value = true;
-   } else {
       disabled.value = false;
+   } else {
+      disabled.value = true;
    }
 }
 
@@ -617,13 +625,39 @@ const GetSaaSAccessProviderTemplate = () => {
       console.log("你在看哪里");
       console.log(SaaSAccessProviderTemplate.value);
    })
+}
 
+// 获得SaaS租户列表
+const getSaaSTenantList = async () => {
+   const instance = axios.create({
+      baseURL: 'https://paas-mgw.apim.xmindit.com/saas-uuas/tenantlist', // 设置基础URL
+      timeout: 5000, // 设置请求超时时间
+      headers: {
+         'Content-Type': 'application/json',
+         'Access-Control-Allow-Origin': '*',
+         'saas-uuas': '4604809207774a5d9aa18d5c8df88aac'
+      }
+   });
+   instance.post('', {}).then(response => {
+      console.log("这里是SaaS租户列表");
+      console.log(response.data);
+      // 在这里执行你的操作
+      // 将response.data赋值给providers
+      for (let i = 0; i < response.data.data.length; i++) {
+         providers.push({
+            tenantId: response.data.data[i].id,
+            name: response.data.data[i].name,
+         });
+      }
+      console.log(providers);
+   })
 }
 
 onMounted(() => {
-   GetAllAccessProvider();
+   // GetAllAccessProvider();
    // GetAccessProvider('1');
    GetSaaSAccessProviderTemplate();
+   getSaaSTenantList();
 })
 
 </script>

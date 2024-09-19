@@ -25,7 +25,7 @@ import axios from '../index'
 export const getAccessProvider = (params: string) => {
     // const data = JSON.parse(params);
     const data = {
-        id: params
+        tenantId: params
     }
     // 返回的数据格式可以和服务端约定
     return axios.post('/GetAccessProviderById', data);
