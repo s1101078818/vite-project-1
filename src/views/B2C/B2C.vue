@@ -1,7 +1,7 @@
 <template>
    <div>
       <el-container>
-         <el-header>
+         <!-- <el-header>
             <el-dropdown split-button type="primary">
                {{ buttonName }}
                <template #dropdown>
@@ -14,9 +14,9 @@
                      </el-scrollbar>
                   </el-dropdown-menu>
                </template>
-            </el-dropdown>
+            </el-dropdown> -->
             <!-- <el-button type="primary" @click="handleAdd">新增</el-button> -->
-         </el-header>
+         <!-- </el-header> -->
          <el-main class="main">
             <!-- <div @click="handleClickPicture" v-if="!showForm">
                <img src="../../assets/login.jpeg" style="width: 600px;" alt="Main Image" />
@@ -24,19 +24,11 @@
             <h3 v-if="!providers.length && !showText">该接入商还未添加过配置，点击添加新配置</h3> -->
             <!-- 编辑的表单 -->
             <!-- <el-form v-else-if="showForm && !isAdd" :disabled="disabled"> -->
-            <el-form :disabled="disabled">
+            <el-form>
                <h2>编辑B2C配置</h2>
                <!-- 表单内容 -->
                <el-row :gutter="20">
                   <el-col :span="12">
-                     <el-form>
-                        <el-form-item label="部署类型">
-                           <el-radio-group v-model="editForm.deployType" @change="handleChange">
-                              <el-radio :value=0>SaaS</el-radio>
-                              <el-radio :value=1>独立部署</el-radio>
-                           </el-radio-group>
-                        </el-form-item>
-                     </el-form>
                      <el-form>
                         <el-form-item label="是否启用">
                            <el-radio-group v-model="editForm.isEnable">
@@ -57,13 +49,14 @@
                      <el-form-item label="TenantId">
                         <el-input v-model="editForm.tenantId"></el-input>
                      </el-form-item>
-                     <!-- 其他表单项 -->
-                  </el-col>
-                  <el-col :span="12">
-                     <!-- 其他表单项 -->
                      <el-form-item label="SPAApiScopes">
                         <el-input v-model="editForm.spaApiScopes"></el-input>
                      </el-form-item>
+                     <!-- 其他表单项 -->
+
+                  </el-col>
+                  <el-col :span="12">
+                     <!-- 其他表单项 -->
                      <el-form-item label="SPABindDomain">
                         <el-input v-model="editForm.spaBindDomain"></el-input>
                      </el-form-item>
@@ -85,37 +78,32 @@
 
                <el-row :gutter="20">
                   <el-col :span="12">
-                     <el-card>
-                        <el-form :disabled="disabled">
-                           <el-form-item label="clientId">
-                              <el-input v-model="editForm.policies.clientId"></el-input>
-                           </el-form-item>
-                           <el-form-item label="names_signUpSignIn">
-                              <el-input v-model="editForm.policies.names_signUpSignIn"></el-input>
-                           </el-form-item>
-                           <el-form-item label="apiScopes">
-                              <el-input v-model="editForm.policies.apiScopes"></el-input>
-                           </el-form-item>
-
-                           <!-- 表单内容 -->
-                        </el-form>
-                     </el-card>
+                     <el-form>
+                        <el-form-item label="clientId">
+                           <el-input v-model="editForm.policies.clientId"></el-input>
+                        </el-form-item>
+                        <el-form-item label="names_signUpSignIn">
+                           <el-input v-model="editForm.policies.names_signUpSignIn"></el-input>
+                        </el-form-item>
+                        <el-form-item label="apiScopes">
+                           <el-input v-model="editForm.policies.apiScopes"></el-input>
+                        </el-form-item>
+                        <!-- 表单内容 -->
+                     </el-form>
                   </el-col>
                   <el-col :span="12">
-                     <el-card>
-                        <el-form :disabled="disabled">
-                           <el-form-item label="authorityDomain">
-                              <el-input v-model="editForm.policies.authorityDomain"></el-input>
-                           </el-form-item>
-                           <el-form-item label="names_editProfile">
-                              <el-input v-model="editForm.policies.names_editProfile"></el-input>
-                           </el-form-item>
-                           <!-- 表单内容 -->
-                        </el-form>
-                     </el-card>
+                     <el-form>
+                        <el-form-item label="authorityDomain">
+                           <el-input v-model="editForm.policies.authorityDomain"></el-input>
+                        </el-form-item>
+                        <el-form-item label="names_editProfile">
+                           <el-input v-model="editForm.policies.names_editProfile"></el-input>
+                        </el-form-item>
+                        <!-- 表单内容 -->
+                     </el-form>
                   </el-col>
                </el-row>
-               <el-form :disabled="disabled">
+               <el-form>
                   <el-form-item label="authorities_signUpSignIn_authority" style="margin-top: 10px;">
                      <el-input v-model="editForm.policies.authorities_signUpSignIn_authority"></el-input>
                   </el-form-item>
@@ -244,19 +232,18 @@ import { getAccessProvider, addAccessProvider, updateAccessProvider, getSaaSAcce
 import { toRaw } from 'vue';
 import axios from 'axios';
 
-const showForm = ref(false)
-const showPicture = ref(true)
-const showText = ref(false)
+// const showForm = ref(false)
+// const showPicture = ref(true)
+// const showText = ref(false)
 const buttonName = ref('请选择接入商')
-const disabled = ref(false)
-const disabled1 = ref(false)
+// const disabled = ref(false)
+// const disabled1 = ref(false)
 
-const isAdd = ref(false)
+// const isAdd = ref(false)
 
 const editForm = ref({
    azureTenantId: '',
    category: '',
-   deployType: 1,
    graphClientId: '',
    graphClientSecret: '',
    isEnable: true,
@@ -279,29 +266,29 @@ const editForm = ref({
    applicationType: ''
 })
 
-const addForm = ref({
-   azureTenantId: '',
-   category: '',
-   deployType: 1,
-   graphClientId: '',
-   graphClientSecret: '',
-   isEnable: true,
-   policies: {
-      apiScopes: [],
-      authorities_editProfile_authority: '',
-      authorities_signUpSignIn_authority: '',
-      authorityDomain: '',
-      clientId: '',
-      names_editProfile: '',
-      names_signUpSignIn: ''
-   },
-   spaApiScopes: [],
-   spaBindDomain: '',
-   spaClientId: '',
-   tenantId: '',
-   webApiAud: '',
-   webApiClientId: '',
-})
+// const addForm = ref({
+//    azureTenantId: '',
+//    category: '',
+//    deployType: 1,
+//    graphClientId: '',
+//    graphClientSecret: '',
+//    isEnable: true,
+//    policies: {
+//       apiScopes: [],
+//       authorities_editProfile_authority: '',
+//       authorities_signUpSignIn_authority: '',
+//       authorityDomain: '',
+//       clientId: '',
+//       names_editProfile: '',
+//       names_signUpSignIn: ''
+//    },
+//    spaApiScopes: [],
+//    spaBindDomain: '',
+//    spaClientId: '',
+//    tenantId: '',
+//    webApiAud: '',
+//    webApiClientId: '',
+// })
 
 const SaaSAccessProviderTemplate = ref({
    azureTenantId: '',
@@ -354,7 +341,7 @@ const providers = reactive<Provider[]>([])
 const handleClick = (data: any) => {
    // console.log("点击切换");
    // console.log(data.tenantId);
-   showForm.value = true
+   // showForm.value = true
    buttonName.value = data.name
    GetAccessProvider(data.tenantId);
 
@@ -368,7 +355,7 @@ const handleClick = (data: any) => {
 const submitForm = () => {
    // 处理表单提交逻辑
    // console.log(toRaw(editForm.value));
-   showForm.value = false
+   // showForm.value = false
    // 新增逻辑
    // toRaw(form.value).id = Math.random().toString(36).substring(2) + Date.now().toString(36);
    // console.log(toRaw(form.value));
@@ -390,25 +377,17 @@ const submitForm = () => {
    editForm.value.policies.apiScopes = [editForm.value.policies.apiScopes] as any;
    editForm.value.spaApiScopes = [editForm.value.spaApiScopes] as any;
    editForm.value.category = 'AccessProvider';
-   if (disabled.value) {
-      editForm.value.deployType = 0
-   }
-   else {
-      editForm.value.deployType = 1
-   }
-
    UpdateAccessProvider(JSON.stringify(toRaw(editForm.value)));
    // }
 }
 
 const cancelEditForm = () => {
    // 处理表单取消逻辑
-   showForm.value = false
+   // showForm.value = false
    // 清空表单
    editForm.value = {
       azureTenantId: '',
       category: '',
-      deployType: 1,
       graphClientId: '',
       graphClientSecret: '',
       isEnable: true,
@@ -521,7 +500,6 @@ const GetAccessProvider = (tenantId: string) => {
       editForm.value = {
          azureTenantId: response.data.azureTenantId,
          category: response.data.category,
-         deployType: response.data.deployType,
          graphClientId: response.data.graphClientId,
          graphClientSecret: response.data.graphClientSecret,
          isEnable: response.data.isEnable,
@@ -543,12 +521,7 @@ const GetAccessProvider = (tenantId: string) => {
          webApiClientId: response.data.webApiClientId,
          applicationType: response.data.applicationType,
       }
-      if (editForm.value.deployType == 1) {
-         disabled.value = false
-      } else {
-         disabled.value = true
-      }
-      isAdd.value = false
+      // isAdd.value = false
    }).catch(error => {
       console.log('There was a problem with your fetch operation:', error);
       // 在这里处理错误
@@ -575,80 +548,79 @@ const GetAccessProvider = (tenantId: string) => {
 //    });
 // }
 
-const handleChange = () => {
-   // 如果form.deployType的值为'1'，则为独立部署，则disabled为false，否则为true
-   if (editForm.value.deployType === 1) {
-      // 清空表单
-      editForm.value = {
-         azureTenantId: '',
-         category: '',
-         deployType: 1,
-         graphClientId: '',
-         graphClientSecret: '',
-         isEnable: true,
-         id: '',
-         policies: {
-            apiScopes: [],
-            authorities_editProfile_authority: '',
-            authorities_signUpSignIn_authority: '',
-            authorityDomain: '',
-            clientId: '',
-            names_editProfile: '',
-            names_signUpSignIn: ''
-         },
-         spaApiScopes: [],
-         spaBindDomain: '',
-         spaClientId: '',
-         tenantId: '',
-         webApiAud: '',
-         webApiClientId: '',
-         applicationType: ''
-      }
-      disabled.value = false;
-      // 如果将独立部署改为SaaS，那么禁用所有输入框并且将模板的值赋值给form
-   } else if (editForm.value.deployType === 0) {
-      editForm.value = {
-         azureTenantId: SaaSAccessProviderTemplate.value.azureTenantId,
-         category: SaaSAccessProviderTemplate.value.category,
-         deployType: SaaSAccessProviderTemplate.value.deployType,
-         graphClientId: SaaSAccessProviderTemplate.value.graphClientId,
-         graphClientSecret: SaaSAccessProviderTemplate.value.graphClientSecret,
-         isEnable: SaaSAccessProviderTemplate.value.isEnable,
-         id: '',
-         policies: {
-            apiScopes: SaaSAccessProviderTemplate.value.policies.apiScopes[0],
-            authorities_editProfile_authority: SaaSAccessProviderTemplate.value.policies.authorities_editProfile_authority,
-            authorities_signUpSignIn_authority: SaaSAccessProviderTemplate.value.policies.authorities_signUpSignIn_authority,
-            authorityDomain: SaaSAccessProviderTemplate.value.policies.authorityDomain,
-            clientId: SaaSAccessProviderTemplate.value.policies.clientId,
-            names_editProfile: SaaSAccessProviderTemplate.value.policies.names_editProfile,
-            names_signUpSignIn: SaaSAccessProviderTemplate.value.policies.names_signUpSignIn
-         },
-         spaApiScopes: SaaSAccessProviderTemplate.value.spaApiScopes[0],
-         spaBindDomain: SaaSAccessProviderTemplate.value.spaBindDomain,
-         spaClientId: SaaSAccessProviderTemplate.value.spaClientId,
-         tenantId: editForm.value.tenantId,
-         webApiAud: SaaSAccessProviderTemplate.value.webApiAud,
-         webApiClientId: SaaSAccessProviderTemplate.value.webApiClientId,
-         applicationType: SaaSAccessProviderTemplate.value.applicationType
-      }
-      disabled.value = true;
-   }
-}
+// const handleChange = () => {
+//    // 如果form.deployType的值为'1'，则为独立部署，则disabled为false，否则为true
+//    if (editForm.value.deployType === 1) {
+//       // 清空表单
+//       editForm.value = {
+//          azureTenantId: '',
+//          category: '',
+//          graphClientId: '',
+//          graphClientSecret: '',
+//          isEnable: true,
+//          id: '',
+//          policies: {
+//             apiScopes: [],
+//             authorities_editProfile_authority: '',
+//             authorities_signUpSignIn_authority: '',
+//             authorityDomain: '',
+//             clientId: '',
+//             names_editProfile: '',
+//             names_signUpSignIn: ''
+//          },
+//          spaApiScopes: [],
+//          spaBindDomain: '',
+//          spaClientId: '',
+//          tenantId: '',
+//          webApiAud: '',
+//          webApiClientId: '',
+//          applicationType: ''
+//       }
+//       disabled.value = false;
+//       // 如果将独立部署改为SaaS，那么禁用所有输入框并且将模板的值赋值给form
+//    } else if (editForm.value.deployType === 0) {
+//       editForm.value = {
+//          azureTenantId: SaaSAccessProviderTemplate.value.azureTenantId,
+//          category: SaaSAccessProviderTemplate.value.category,
+//          deployType: SaaSAccessProviderTemplate.value.deployType,
+//          graphClientId: SaaSAccessProviderTemplate.value.graphClientId,
+//          graphClientSecret: SaaSAccessProviderTemplate.value.graphClientSecret,
+//          isEnable: SaaSAccessProviderTemplate.value.isEnable,
+//          id: '',
+//          policies: {
+//             apiScopes: SaaSAccessProviderTemplate.value.policies.apiScopes[0],
+//             authorities_editProfile_authority: SaaSAccessProviderTemplate.value.policies.authorities_editProfile_authority,
+//             authorities_signUpSignIn_authority: SaaSAccessProviderTemplate.value.policies.authorities_signUpSignIn_authority,
+//             authorityDomain: SaaSAccessProviderTemplate.value.policies.authorityDomain,
+//             clientId: SaaSAccessProviderTemplate.value.policies.clientId,
+//             names_editProfile: SaaSAccessProviderTemplate.value.policies.names_editProfile,
+//             names_signUpSignIn: SaaSAccessProviderTemplate.value.policies.names_signUpSignIn
+//          },
+//          spaApiScopes: SaaSAccessProviderTemplate.value.spaApiScopes[0],
+//          spaBindDomain: SaaSAccessProviderTemplate.value.spaBindDomain,
+//          spaClientId: SaaSAccessProviderTemplate.value.spaClientId,
+//          tenantId: editForm.value.tenantId,
+//          webApiAud: SaaSAccessProviderTemplate.value.webApiAud,
+//          webApiClientId: SaaSAccessProviderTemplate.value.webApiClientId,
+//          applicationType: SaaSAccessProviderTemplate.value.applicationType
+//       }
+//       disabled.value = true;
+//    }
+// }
 
-const handleChange1 = () => {
-   if (addForm.value.deployType === 1) {
-      disabled1.value = true;
-   } else {
-      disabled1.value = false;
-   }
-}
+// const handleChange1 = () => {
+//    if (addForm.value.deployType === 1) {
+//       disabled1.value = true;
+//    } else {
+//       disabled1.value = false;
+//    }
+// }
 
-const handleAdd = () => {
-   showForm.value = true;
-   isAdd.value = true;
-   addForm.value.deployType = 0;
-}
+// const handleAdd = () => {
+//    showForm.value = true;
+//    isAdd.value = true;
+//    addForm.value.deployType = 0;
+// }
 
 const GetSaaSAccessProviderTemplate = () => {
    getSaaSAccessProviderTemplate().then(response => {
@@ -709,23 +681,23 @@ const getSaaSTenantList = async () => {
 onMounted(() => {
    // GetAllAccessProvider();
    // GetAccessProvider('1');
-   GetSaaSAccessProviderTemplate();
-   getSaaSTenantList();
+   // GetSaaSAccessProviderTemplate();
+   // getSaaSTenantList();
 })
 
 </script>
 
 <style scoped>
-.el-header {
+/* .el-header {
    display: flex;
    justify-content: flex-start;
    align-items: center;
    background-color: #fff;
    border-bottom: 1px solid #e0e0e0;
-}
+} */
 
-.el-dropdown {
-   margin-right: auto;
+/* .el-dropdown {
+   margin-right: auto; */
    /* 将下拉菜单推到右侧 */
-}
+/* } */
 </style>
