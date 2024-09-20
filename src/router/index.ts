@@ -19,7 +19,7 @@ const routes = [
                 icon: 'House',
                 requireAuth: true,
             },
-            component: () => import("../views/home/B2C.vue"),
+            component: () => import("../views/B2C/index.vue"),
         },
         {
             path: "/B2B",
@@ -29,7 +29,7 @@ const routes = [
                 icon: 'House',
                 requireAuth: true,
             },
-            component: () => import("../views/home/B2B.vue"),
+            component: () => import("../views/B2B/index.vue"),
 
         }]
     },

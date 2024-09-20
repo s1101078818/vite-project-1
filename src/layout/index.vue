@@ -1,6 +1,6 @@
 <template>
     <div class="common-layout">
-        <el-container>
+        <el-container class="container">
             <el-aside class="fixed-aside">
                 <Aside></Aside>
             </el-aside>
@@ -8,7 +8,12 @@
                 <el-header class="header">
                     <Header></Header>
                 </el-header>
-                <el-main class="main"><router-view></router-view></el-main>
+                <el-main class="main">
+                    <!-- <div class="content-wrapper">
+                        <router-view></router-view>
+                    </div> -->
+                    <router-view></router-view>
+                </el-main>
             </el-container>
         </el-container>
     </div>
@@ -26,11 +31,12 @@ import Header from './header.vue';
     /* 设置父容器高度为视口高度 */
 }
 
+.container {
+    display: flex;
+    height: 100%;
+}
+
 .fixed-aside {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
     width: 250px;
     /* 根据需要调整宽度 */
     background-color: #f0f2f5;
@@ -44,12 +50,21 @@ import Header from './header.vue';
     /* 确保内容区域不会与侧边栏重叠 */
     height: 100%;
     /* 设置内容区域高度为100% */
+    width: 100%;
+}
+
+.header {
+    background-color: #fff;
+    /* 根据需要调整背景颜色 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* 根据需要调整阴影 */
+    height: 62px;
 }
 
 .main {
-    height: 100%;
-    /* 设置主内容区域高度为100% */
-    padding: 20px;
+    margin-top: 10px;
+    padding: 0;
     /* 根据需要调整内边距 */
+    border: 0;
 }
 </style>

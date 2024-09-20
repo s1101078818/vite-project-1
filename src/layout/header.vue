@@ -1,5 +1,5 @@
 <template>
-    <div class="header">
+    <div class="header1">
         <!-- <div class="user-info">
             <el-avatar :size="32" class="mr-3"
                 src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
@@ -10,7 +10,6 @@
                 <span class="el-dropdown-link">
                     <el-avatar :size="32" class="mr-3"
                         src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-                    <span class="username">{{ username }}</span>
                 </span>
                 <template #dropdown>
                     <el-dropdown-menu>
@@ -18,8 +17,10 @@
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
+            <div class="username">
+                {{ username }}
+            </div>
         </div>
-
     </div>
 </template>
 
@@ -49,34 +50,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.header {
-    position: fixed;
-    top: 0;
-    left: 250px;
-    /* 与侧边栏宽度对齐 */
-    right: 0;
-    /* 使宽度铺满页面 */
-    background-color: #fff;
-    color: #333;
-    padding: 10px;
+.header1 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .user-info {
     display: flex;
     align-items: center;
+    margin-top: 15px;
     margin-left: auto;
     /* 将用户信息推到最右侧 */
-}
-
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
 }
 
 .username {
@@ -92,4 +77,6 @@ onMounted(() => {
 .el-dropdown-link:hover {
     color: #66b1ff;
 }
+
+
 </style>
