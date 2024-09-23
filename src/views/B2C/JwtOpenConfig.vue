@@ -97,12 +97,12 @@ const props = defineProps({
     }
 });
 
-// watch(() => props.jwtOpenConfig, (newVal) => {
-//     console.log("JwtOpenConfig", JwtOpenConfig.value);
-//     console.log('props.jwtOpenConfig changed:', toRaw(newVal));
-//     JwtOpenConfig.value = toRaw(newVal);
-//     console.log('JwtOpenConfig updated:', JwtOpenConfig.value);
-// }, { deep: true, immediate: true });
+watch(() => props.jwtOpenConfig, (newVal) => {
+    console.log("JwtOpenConfig", JwtOpenConfig.value);
+    console.log('props.jwtOpenConfig changed:', toRaw(newVal));
+    JwtOpenConfig.value = toRaw(newVal);
+    console.log('JwtOpenConfig updated:', JwtOpenConfig.value);
+}, { deep: true, immediate: true });
 
 </script>
 

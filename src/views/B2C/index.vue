@@ -18,7 +18,7 @@
     </div>
     <el-tabs v-model="activeName" class="B2C-tabs" style="margin-left: 20px;">
         <el-tab-pane label="B2C租户管理" name="first">
-            <B2C></B2C>
+            <B2C :editForm="editForm" :isAdd="isAdd" :tenantId="tenantId"></B2C>
         </el-tab-pane>
         <el-tab-pane label="JwtKeys" name="second">
             <JwtKeys :jwtKeys="jwtKeys"></JwtKeys>
@@ -135,6 +135,30 @@ const form = ref<Data>({
     }
 })
 
+const editForm = ref({
+    azureTenantId: '',
+    category: '',
+    graphClientId: '',
+    graphClientSecret: '',
+    isEnable: true,
+    id: '',
+    policies: {
+        apiScopes: [],
+        authorities_editProfile_authority: '',
+        authorities_signUpSignIn_authority: '',
+        authorityDomain: '',
+        clientId: '',
+        names_editProfile: '',
+        names_signUpSignIn: ''
+    },
+    spaApiScopes: [],
+    spaBindDomain: '',
+    spaClientId: '',
+    tenantId: '',
+    webApiAud: '',
+    webApiClientId: ''
+})
+
 const jwtKeys = ref<JwtKey[]>([])
 
 const jwtOpenConfig = ref<JwtOpenConfig>({
@@ -152,19 +176,32 @@ const jwtOpenConfig = ref<JwtOpenConfig>({
     claims_supported: [],
 })
 
+const isAdd = ref(false)
+const tenantId = ref('')
+
 const activeName = ref('first')
 
 const handleClick = (data: any) => {
     buttonName.value = data.name
+    tenantId.value = data.tenantId
     GetAccessProvider(data.tenantId);
 }
 
 const GetAccessProvider = (tenantId: string) => {
     getAccessProvider(tenantId).then(response => {
-        form.value = response.data
-        console.log("这里是form", form.value);
-        jwtKeys.value = response.data.jwtKeys
-        jwtOpenConfig.value = response.data.jwtOpenConfig
+        // 当response.data为空时，新增，不为空时，执行编辑
+        if (response.data == null) {
+            isAdd.value = true
+        } else {
+            isAdd.value = false
+            form.value = response.data
+            jwtKeys.value = response.data.jwtKeys
+            jwtOpenConfig.value = response.data.jwtOpenConfig
+            // response.data去除jwtKeys和jwtOpenConfig
+            delete response.data.jwtKeys
+            delete response.data.jwtOpenConfig
+            editForm.value = response.data
+        }
     }).catch(error => {
         console.log('There was a problem with your fetch operation:', error);
         // 在这里处理错误

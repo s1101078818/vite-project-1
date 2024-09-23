@@ -38,7 +38,7 @@ import { ref, watch, toRaw } from 'vue'
 import { defineProps } from 'vue';
 
 const JwtKeys = ref({
-    kid: '11',
+    kid: '',
     nbf: '',
     use: '',
     kty: '',
