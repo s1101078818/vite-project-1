@@ -1,74 +1,16 @@
 <template>
     <div class="JwtOpenConfig-container">
-        <el-form>
-            <!-- 表单内容 -->
-            <el-row :gutter="20">
-                <el-col :span="12">
-                    <el-form-item label="issuer">
-                        <el-input v-model="JwtOpenConfig.issuer"></el-input>
-                    </el-form-item>
-                    <el-form-item label="authorization_endpoint">
-                        <el-input v-model="JwtOpenConfig.authorization_endpoint"></el-input>
-                    </el-form-item>
-                    <el-form-item label="token_endpoint">
-                        <el-input v-model="JwtOpenConfig.token_endpoint"></el-input>
-                    </el-form-item>
-                    <!-- 其他表单项 -->
-                </el-col>
-                <el-col :span="12">
-                    <!-- 其他表单项 -->
-                    <el-form-item label="end_session_endpoint">
-                        <el-input v-model="JwtOpenConfig.end_session_endpoint"></el-input>
-                    </el-form-item>
-                    <el-form-item label="jwks_uri">
-                        <el-input v-model="JwtOpenConfig.jwks_uri"></el-input>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-            <el-form-item label="response_modes_supported">
-                <el-tag type="primary" v-for="tag in JwtOpenConfig.response_modes_supported" :key="tag"
-                    style="margin-right: 10px;">{{ tag
-                    }}</el-tag>
-            </el-form-item>
-            <el-form-item label="response_types_supported">
-                <el-tag type="primary" v-for="tag in JwtOpenConfig.response_types_supported" :key="tag"
-                    style="margin-right: 10px;">{{ tag
-                    }}</el-tag>
-            </el-form-item>
-            <el-form-item label="scopes_supported">
-                <el-tag type="primary" v-for="tag in JwtOpenConfig.scopes_supported" :key="tag"
-                    style="margin-right: 10px;">{{ tag
-                    }}</el-tag>
-            </el-form-item>
-            <el-form-item label="subject_types_supported">
-                <el-tag type="primary" v-for="tag in JwtOpenConfig.subject_types_supported" :key="tag"
-                    style="margin-right: 10px;">{{ tag
-                    }}</el-tag>
-            </el-form-item>
-            <el-form-item label="id_token_signing_alg_values_supported">
-                <el-tag type="primary" v-for="tag in JwtOpenConfig.id_token_signing_alg_values_supported" :key="tag"
-                    style="margin-right: 10px;">{{
-                        tag
-                    }}</el-tag>
-            </el-form-item>
-            <el-form-item label="token_endpoint_auth_methods_supported">
-                <el-tag type="primary" v-for="tag in JwtOpenConfig.token_endpoint_auth_methods_supported" :key="tag"
-                    style="margin-right: 10px;">{{
-                        tag
-                    }}</el-tag>
-            </el-form-item>
-            <el-form-item label="claims_supported">
-                <el-tag type="primary" v-for="tag in JwtOpenConfig.claims_supported" :key="tag"
-                    style="margin-right: 10px;">{{ tag
-                    }}</el-tag>
-            </el-form-item>
-        </el-form>
+        <json-editor-vue class="config-editor" v-model="JwtOpenConfig" style="height: 600px;" />
     </div>
+    <el-button type="primary" @click="transJwtOpenConfig">保存</el-button>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch, toRaw } from 'vue'
 import { defineProps } from 'vue';
+// @ts-ignore
+import JsonEditorVue from 'json-editor-vue3'
+
 const JwtOpenConfig = ref({
     issuer: '',
     authorization_endpoint: '',
@@ -103,6 +45,14 @@ watch(() => props.jwtOpenConfig, (newVal) => {
     JwtOpenConfig.value = toRaw(newVal);
     console.log('JwtOpenConfig updated:', JwtOpenConfig.value);
 }, { deep: true, immediate: true });
+
+// 使用defineEmits注册一个自定义事件
+const emit = defineEmits(["getJwtOpenConfig"])
+
+// 点击事件触发emit，去调用我们注册的自定义事件getValue,并传递value参数至父组件
+const transJwtOpenConfig = () => {
+    emit("getJwtOpenConfig", JwtOpenConfig.value)
+}
 
 </script>
 

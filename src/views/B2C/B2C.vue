@@ -229,6 +229,7 @@ import { getAccessProvider, addAccessProvider, updateAccessProvider, getSaaSAcce
 import { toRaw } from 'vue';
 import axios from 'axios';
 import { isAbsolute } from 'path';
+import { id } from 'element-plus/es/locale';
 
 // const showForm = ref(false)
 // const showPicture = ref(true)
@@ -241,7 +242,6 @@ import { isAbsolute } from 'path';
 
 const EditForm = ref({
    azureTenantId: '',
-   category: '',
    graphClientId: '',
    graphClientSecret: '',
    isEnable: true,
@@ -289,6 +289,37 @@ const addForm = ref({
    // applicationType: ''
 })
 
+const JwtKeys = ref({
+   kid: '',
+   nbf: '',
+   use: '',
+   kty: '',
+   e: '',
+   n: ''
+})
+
+const JwtOpenConfig = ref({
+   issuer: '',
+   authorization_endpoint: '',
+   token_endpoint: '',
+   end_session_endpoint: '',
+   jwks_uri: '',
+   response_modes_supported: [
+   ],
+   response_types_supported: [
+   ],
+   scopes_supported: [
+   ],
+   subject_types_supported: [
+   ],
+   id_token_signing_alg_values_supported: [
+   ],
+   token_endpoint_auth_methods_supported: [
+   ],
+   claims_supported: [
+   ]
+})
+
 const IsAdd = ref(false)
 const TenantId = ref('')
 
@@ -301,6 +332,12 @@ const props = defineProps({
    },
    tenantId: {
       type: String as () => any
+   },
+   jwtOpenConfig: {
+      type: Object as () => any
+   },
+   jwtKeys: {
+      type: Object as () => any
    }
 });
 
@@ -329,6 +366,23 @@ watch(() => props.tenantId, (newVal) => {
    TenantId.value = toRaw(newVal);
    console.log('tenantId updated:', TenantId.value);
 }, { deep: true, immediate: true });
+
+watch(() => props.jwtKeys, (newVal) => {
+   if (toRaw(newVal)[0] != null) {
+      console.log("JwtKeys", JwtKeys.value);
+      console.log('props.jwtKeys changed:', toRaw(newVal)[0]);
+      JwtKeys.value = toRaw(newVal)[0];
+      console.log('JwtKeys updated:', JwtKeys.value);
+   }
+}, { deep: true, immediate: true });
+
+watch(() => props.jwtOpenConfig, (newVal) => {
+   console.log("JwtOpenConfig", JwtOpenConfig.value);
+   console.log('props.jwtOpenConfig changed:', toRaw(newVal));
+   JwtOpenConfig.value = toRaw(newVal);
+   console.log('JwtOpenConfig updated:', JwtOpenConfig.value);
+}, { deep: true, immediate: true });
+
 
 // const addForm = ref({
 //    azureTenantId: '',
@@ -416,6 +470,45 @@ watch(() => props.tenantId, (newVal) => {
 //    //    disabled.value = false
 // }
 
+const data = ref({
+   id: '',
+   deployType: 0,
+   tenantId: '',
+   azureTenantId: '',
+   graphClientId: '',
+   graphClientSecret: '',
+   spaBindDomain: '',
+   spaClientId: '',
+   spaApiScopes: [],
+   policies: {
+      clientId: '',
+      apiScopes: [],
+      authorityDomain: '',
+      names_signUpSignIn: '',
+      names_editProfile: '',
+      authorities_signUpSignIn_authority: '',
+      authorities_editProfile_authority: '',
+   },
+   webApiClientId: '',
+   webApiAud: '',
+   isEnable: true,
+   jwtKeys: [],
+   jwtOpenConfig: {
+      issuer: '',
+      authorization_endpoint: '',
+      token_endpoint: '',
+      end_session_endpoint: '',
+      jwks_uri: '',
+      response_modes_supported: [],
+      response_types_supported: [],
+      scopes_supported: [],
+      subject_types_supported: [],
+      id_token_signing_alg_values_supported: [],
+      token_endpoint_auth_methods_supported: [],
+      claims_supported: [],
+   }
+})
+
 const update = () => {
    // 处理表单提交逻辑
    // console.log(toRaw(editForm.value));
@@ -438,25 +531,69 @@ const update = () => {
    // } else {
    // toRaw(editForm.value).id = '1'
    // apiScopes和spaApiScopes需要处理成数组
-   console.log("这里是EditForm数组");
-
-   console.log(toRaw(EditForm.value));
-
    // EditForm.value.policies.apiScopes = [EditForm.value.policies.apiScopes] as any;
    // EditForm.value.spaApiScopes = [EditForm.value.spaApiScopes] as any;
-   EditForm.value.category = 'AccessProvider';
+   data.value = {
+      id: EditForm.value.id,
+      deployType: 0,
+      tenantId: EditForm.value.tenantId,
+      azureTenantId: EditForm.value.azureTenantId,
+      graphClientId: EditForm.value.graphClientId,
+      graphClientSecret: EditForm.value.graphClientSecret,
+      spaBindDomain: EditForm.value.spaBindDomain,
+      spaClientId: EditForm.value.spaClientId,
+      spaApiScopes: EditForm.value.spaApiScopes,
+      policies: {
+         clientId: EditForm.value.policies.clientId,
+         apiScopes: EditForm.value.policies.apiScopes,
+         authorityDomain: EditForm.value.policies.authorityDomain,
+         names_signUpSignIn: EditForm.value.policies.names_signUpSignIn,
+         names_editProfile: EditForm.value.policies.names_editProfile,
+         authorities_signUpSignIn_authority: EditForm.value.policies.authorities_signUpSignIn_authority,
+         authorities_editProfile_authority: EditForm.value.policies.authorities_editProfile_authority,
+      },
+      webApiClientId: EditForm.value.webApiClientId,
+      webApiAud: EditForm.value.webApiAud,
+      isEnable: EditForm.value.isEnable,
+      // @ts-ignore
+      jwtKeys: [JwtKeys.value],
+      jwtOpenConfig: JwtOpenConfig.value,
+   }
 
-   console.log("这里是EditForm数组处理后的");
-   console.log(toRaw(EditForm.value));
-
-   UpdateAccessProvider(JSON.stringify(toRaw(EditForm.value)));
+   UpdateAccessProvider(JSON.stringify(data.value));
    // }
 }
 
 const add = () => {
-   addForm.value.policies.apiScopes = [addForm.value.policies.apiScopes] as any;
-   addForm.value.spaApiScopes = [addForm.value.spaApiScopes] as any;
-   UpdateAccessProvider(JSON.stringify(toRaw(addForm.value)));
+   data.value = {
+      id: addForm.value.id,
+      deployType: 0,
+      tenantId: addForm.value.tenantId,
+      azureTenantId: addForm.value.azureTenantId,
+      graphClientId: addForm.value.graphClientId,
+      graphClientSecret: addForm.value.graphClientSecret,
+      spaBindDomain: addForm.value.spaBindDomain,
+      spaClientId: addForm.value.spaClientId,
+      spaApiScopes: Array.isArray(addForm.value.spaApiScopes) ? addForm.value.spaApiScopes : [addForm.value.spaApiScopes],
+      policies: {
+         clientId: addForm.value.policies.clientId,
+         apiScopes: Array.isArray(addForm.value.policies.apiScopes) ? addForm.value.policies.apiScopes : [addForm.value.policies.apiScopes],
+         authorityDomain: addForm.value.policies.authorityDomain,
+         names_signUpSignIn: addForm.value.policies.names_signUpSignIn,
+         names_editProfile: addForm.value.policies.names_editProfile,
+         authorities_signUpSignIn_authority: addForm.value.policies.authorities_signUpSignIn_authority,
+         authorities_editProfile_authority: addForm.value.policies.authorities_editProfile_authority,
+      },
+      webApiClientId: addForm.value.webApiClientId,
+      webApiAud: addForm.value.webApiAud,
+      isEnable: addForm.value.isEnable,
+      // @ts-ignore
+      jwtKeys: null,
+      // @ts-ignore
+      jwtOpenConfig: null,
+   }
+   // 将addForm.value.policies.apiScopes和addForm.value.spaApiScopes转为数组
+   AddAccessProvider(JSON.stringify(data.value));
 }
 
 const cancelEditForm = () => {
@@ -465,7 +602,6 @@ const cancelEditForm = () => {
    // 清空表单
    EditForm.value = {
       azureTenantId: '',
-      category: '',
       graphClientId: '',
       graphClientSecret: '',
       isEnable: true,
@@ -573,22 +709,38 @@ const cancelAddForm = () => {
 //       console.log(error);
 //    })
 // }
+const AddAccessProvider = (data: any) => {
+   addAccessProvider(data).then(response => {
+      // console.log(response);
+      // 在这里执行你的操作
+      // 将response.data赋值给form
+      if (response.status == 200) {
+         ElMessage.success('新增成功');
+         // 等2秒刷新页面
+         setTimeout(() => {
+            location.reload();
+         }, 1000);
+      } else {
+         ElMessage.error('新增失败');
+      }
+   }).catch(error => {
+      console.log(error);
+   })
+}
+
 
 const UpdateAccessProvider = (data: any) => {
    updateAccessProvider(data).then(response => {
       // console.log(response);
       // 在这里执行你的操作
       // 将response.data赋值给form
-
       if (response.status == 200) {
-
          ElMessage.success('修改成功');
          // 等2秒刷新页面
          setTimeout(() => {
-            location.reload();
+            // location.reload();
          }, 2000);
       } else {
-
          ElMessage.error('修改失败');
       }
    }).catch(error => {
@@ -796,17 +948,4 @@ const UpdateAccessProvider = (data: any) => {
 
 </script>
 
-<style scoped>
-/* .el-header {
-   display: flex;
-   justify-content: flex-start;
-   align-items: center;
-   background-color: #fff;
-   border-bottom: 1px solid #e0e0e0;
-} */
-
-/* .el-dropdown {
-   margin-right: auto; */
-/* 将下拉菜单推到右侧 */
-/* } */
-</style>
+<style scoped></style>

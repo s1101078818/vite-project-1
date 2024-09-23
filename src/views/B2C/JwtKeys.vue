@@ -1,41 +1,15 @@
 <template>
     <div class="Jwt-container">
-        <el-form>
-            <!-- 表单内容 -->
-            <el-row :gutter="20">
-                <el-col :span="12">
-                    <el-form-item label="Kid">
-                        <el-input v-model="JwtKeys.kid"></el-input>
-                    </el-form-item>
-                    <el-form-item label="Nbf">
-                        <el-input v-model="JwtKeys.nbf"></el-input>
-                    </el-form-item>
-                    <el-form-item label="Use">
-                        <el-input v-model="JwtKeys.use"></el-input>
-                    </el-form-item>
-                    <!-- 其他表单项 -->
-
-                </el-col>
-                <el-col :span="12">
-                    <!-- 其他表单项 -->
-                    <el-form-item label="Kty">
-                        <el-input v-model="JwtKeys.kty"></el-input>
-                    </el-form-item>
-                    <el-form-item label="E">
-                        <el-input v-model="JwtKeys.e"></el-input>
-                    </el-form-item>
-                    <el-form-item label="N">
-                        <el-input v-model="JwtKeys.n"></el-input>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-        </el-form>
+        <json-editor-vue class="keys-editor" v-model="JwtKeys" style="height: 600px;" />
     </div>
+    <el-button type="primary" @click="transJwtKeys">保存</el-button>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch, toRaw } from 'vue'
 import { defineProps } from 'vue';
+// @ts-ignore
+import JsonEditorVue from 'json-editor-vue3'
 
 const JwtKeys = ref({
     kid: '',
@@ -45,7 +19,6 @@ const JwtKeys = ref({
     e: '',
     n: ''
 })
-
 
 const props = defineProps({
     jwtKeys: {
@@ -61,6 +34,15 @@ watch(() => props.jwtKeys, (newVal) => {
         console.log('JwtKeys updated:', JwtKeys.value);
     }
 }, { deep: true, immediate: true });
+
+// 使用defineEmits注册一个自定义事件
+const emit = defineEmits(["getJwtKeys"])
+
+// 点击事件触发emit，去调用我们注册的自定义事件getValue,并传递value参数至父组件
+const transJwtKeys = () => {
+    emit("getJwtKeys", JwtKeys.value)
+}
+
 
 </script>
 

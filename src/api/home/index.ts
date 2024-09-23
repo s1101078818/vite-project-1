@@ -44,11 +44,16 @@ export const addAccessProvider = (params: any) => {
 }
 
 // 修改
-export const updateAccessProvider = (params: any) =>{
+export const updateAccessProvider = (params: any) => {
     return axios.post('/UpdateAccessProvider', params);
 }
 
 // 获得SaaS模板
 export const getSaaSAccessProviderTemplate = () => {
     return axios.get('/GetSaaSAccessProviderTemplate');
+}
+
+// 获取jwt配置信息
+export const updateAccessProviderJwtDataById = (params: any) => {
+    return axios.post('/UpdateAccessProviderJwtDataById', params);
 }

@@ -1,6 +1,11 @@
 <template>
-    <div class="dropdown-container">
-        <el-dropdown split-button type="primary">
+    <div class="select-container">
+        <el-select v-model="value" filterable placeholder="Select" style="width: 240px" @change="handleChange(value)">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-button type="primary" style="margin-left: 20px;"
+            @click="UpdateAccessProviderJwtDataById">更新jwt配置</el-button>
+        <!-- <el-dropdown split-button type="primary">
             <span class="el-dropdown-link">
                 {{ buttonName }}
             </span>
@@ -14,17 +19,19 @@
                     </el-scrollbar>
                 </el-dropdown-menu>
             </template>
-        </el-dropdown>
+</el-dropdown> -->
     </div>
     <el-tabs v-model="activeName" class="B2C-tabs" style="margin-left: 20px;">
         <el-tab-pane label="B2C租户管理" name="first">
-            <B2C :editForm="editForm" :isAdd="isAdd" :tenantId="tenantId"></B2C>
+            <B2C :editForm="editForm" :isAdd="isAdd" :tenantId="tenantId" :jwtKeys="jwtKeys"
+                :jwtOpenConfig="jwtOpenConfig">
+            </B2C>
         </el-tab-pane>
         <el-tab-pane label="JwtKeys" name="second">
-            <JwtKeys :jwtKeys="jwtKeys"></JwtKeys>
+            <JwtKeys :jwtKeys="jwtKeys" @getJwtKeys="getJwtKeys"></JwtKeys>
         </el-tab-pane>
         <el-tab-pane label="JwtOpenConfig" name="third">
-            <JwtOpenConfig :jwtOpenConfig="jwtOpenConfig"></JwtOpenConfig>
+            <JwtOpenConfig :jwtOpenConfig="jwtOpenConfig" @getJwtOpenConfig="getJwtOpenConfig"></JwtOpenConfig>
         </el-tab-pane>
     </el-tabs>
 </template>
@@ -34,15 +41,24 @@ import { ref, reactive, onMounted } from 'vue'
 import B2C from '../B2C/B2C.vue'
 import JwtKeys from './JwtKeys.vue';
 import JwtOpenConfig from './JwtOpenConfig.vue';
-import { getAccessProvider } from '../../api/home';
+import { getAccessProvider, updateAccessProviderJwtDataById } from '../../api/home';
 import axios from 'axios';
 
-const buttonName = ref('请选择接入商')
-const providers = reactive<Provider[]>([])
-interface Provider {
-    tenantId: string;
-    name: string;
+const value = ref('')
+
+interface ListItem {
+    value: string
+    label: string
 }
+
+const options = ref<ListItem[]>([])
+
+// const buttonName = ref('请选择接入商')
+// const providers = reactive<Provider[]>([])
+// interface Provider {
+//     tenantId: string;
+//     name: string;
+// }
 
 interface JwtKey {
     kid: string;
@@ -181,10 +197,15 @@ const tenantId = ref('')
 
 const activeName = ref('first')
 
-const handleClick = (data: any) => {
-    buttonName.value = data.name
-    tenantId.value = data.tenantId
-    GetAccessProvider(data.tenantId);
+// const handleClick = (data: any) => {
+//     buttonName.value = data.name
+//     tenantId.value = data.tenantId
+//     GetAccessProvider(data.tenantId);
+// }
+
+const handleChange = (data: string) => {
+    tenantId.value = data
+    GetAccessProvider(data);
 }
 
 const GetAccessProvider = (tenantId: string) => {
@@ -192,6 +213,29 @@ const GetAccessProvider = (tenantId: string) => {
         // 当response.data为空时，新增，不为空时，执行编辑
         if (response.data == null) {
             isAdd.value = true
+            jwtKeys.value = [{
+                kid: '',
+                // @ts-ignore
+                nbf: '',
+                use: '',
+                kty: '',
+                e: '',
+                n: ''
+            }]
+            jwtOpenConfig.value = {
+                issuer: '',
+                authorization_endpoint: '',
+                token_endpoint: '',
+                end_session_endpoint: '',
+                jwks_uri: '',
+                response_modes_supported: [],
+                response_types_supported: [],
+                scopes_supported: [],
+                subject_types_supported: [],
+                id_token_signing_alg_values_supported: [],
+                token_endpoint_auth_methods_supported: [],
+                claims_supported: [],
+            }
         } else {
             isAdd.value = false
             form.value = response.data
@@ -223,10 +267,48 @@ const getSaaSTenantList = () => {
         // 在这里执行你的操作
         // 将response.data赋值给providers
         for (let i = 0; i < response.data.data.length; i++) {
-            providers.push({
-                tenantId: response.data.data[i].id,
-                name: response.data.data[i].name,
-            });
+            // providers.push({
+            //     tenantId: response.data.data[i].id,
+            //     name: response.data.data[i].name,
+            // });
+            // 赋值给options
+            options.value.push({
+                value: response.data.data[i].id,
+                label: response.data.data[i].name
+            })
+        }
+    })
+}
+
+const getJwtKeys = (value: any) => {
+    jwtKeys.value = [value];
+    console.log("8888888888888888888888888");
+    console.log(jwtKeys.value);
+}
+
+const getJwtOpenConfig = (value: any) => {
+    jwtOpenConfig.value = value;
+    console.log(jwtOpenConfig.value);
+}
+
+const UpdateAccessProviderJwtDataById = () => {
+    const data = {
+        tenantId: tenantId.value
+    }
+    updateAccessProviderJwtDataById(data).then(response => {
+        if (response.status == 200) {
+            ElMessage({
+                message: '更新jwt信息成功',
+                type: 'success',
+            })
+            // 等待1秒后刷新页面
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            ElMessage({
+                message: '更新jwt信息失败',
+            })
         }
     })
 }
@@ -245,16 +327,14 @@ onMounted(() => {
     font-weight: 600;
 }
 
-.dropdown-container {
+.select-container {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     background-color: #fff;
 }
 
-.el-dropdown {
-    margin-right: auto;
-    /* 将下拉菜单推到右侧 */
+.el-select {
     margin-left: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
