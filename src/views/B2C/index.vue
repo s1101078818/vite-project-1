@@ -1,25 +1,10 @@
 <template>
-    <div class="select-container">
+    <div class="select-container" v-loading.fullscreen.lock="loading">
         <el-select v-model="value" filterable placeholder="Select" style="width: 240px" @change="handleChange(value)">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
         <el-button type="primary" style="margin-left: 20px;"
             @click="UpdateAccessProviderJwtDataById">更新jwt配置</el-button>
-        <!-- <el-dropdown split-button type="primary">
-            <span class="el-dropdown-link">
-                {{ buttonName }}
-            </span>
-            <template #dropdown>
-                <el-dropdown-menu>
-                    <el-scrollbar height="400px">
-                        <el-dropdown-item v-for="provider in providers" :key="provider.tenantId"
-                            @click="handleClick(provider)">
-                            {{ provider.name }}
-                        </el-dropdown-item>
-                    </el-scrollbar>
-                </el-dropdown-menu>
-            </template>
-</el-dropdown> -->
     </div>
     <el-tabs v-model="activeName" class="B2C-tabs" style="margin-left: 20px;">
         <el-tab-pane label="B2C租户管理" name="first">
@@ -37,14 +22,24 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import B2C from '../B2C/B2C.vue'
 import JwtKeys from './JwtKeys.vue';
 import JwtOpenConfig from './JwtOpenConfig.vue';
 import { getAccessProvider, updateAccessProviderJwtDataById } from '../../api/home';
 import axios from 'axios';
 
+
 const value = ref('')
+const loading = ref(false)
+
+const fullscreenLoading = ref(false)
+const openFullScreen1 = () => {
+    fullscreenLoading.value = true
+    setTimeout(() => {
+        fullscreenLoading.value = false
+    }, 2000)
+}
 
 interface ListItem {
     value: string
@@ -52,13 +47,6 @@ interface ListItem {
 }
 
 const options = ref<ListItem[]>([])
-
-// const buttonName = ref('请选择接入商')
-// const providers = reactive<Provider[]>([])
-// interface Provider {
-//     tenantId: string;
-//     name: string;
-// }
 
 interface JwtKey {
     kid: string;
@@ -197,12 +185,6 @@ const tenantId = ref('')
 
 const activeName = ref('first')
 
-// const handleClick = (data: any) => {
-//     buttonName.value = data.name
-//     tenantId.value = data.tenantId
-//     GetAccessProvider(data.tenantId);
-// }
-
 const handleChange = (data: string) => {
     tenantId.value = data
     GetAccessProvider(data);
@@ -254,6 +236,7 @@ const GetAccessProvider = (tenantId: string) => {
 
 // 获得SaaS租户列表
 const getSaaSTenantList = () => {
+    loading.value = true
     const instance = axios.create({
         baseURL: 'https://paas-mgw.apim.xmindit.com/saas-uuas/tenantlist', // 设置基础URL
         timeout: 5000, // 设置请求超时时间
@@ -277,35 +260,37 @@ const getSaaSTenantList = () => {
                 label: response.data.data[i].name
             })
         }
+        loading.value = false
     })
 }
 
 const getJwtKeys = (value: any) => {
     jwtKeys.value = [value];
-    console.log("8888888888888888888888888");
-    console.log(jwtKeys.value);
+    // console.log("8888888888888888888888888");
+    // console.log(jwtKeys.value);
 }
 
 const getJwtOpenConfig = (value: any) => {
     jwtOpenConfig.value = value;
-    console.log(jwtOpenConfig.value);
+    // console.log(jwtOpenConfig.value);
 }
 
 const UpdateAccessProviderJwtDataById = () => {
+    loading.value = true
     const data = {
         tenantId: tenantId.value
     }
     updateAccessProviderJwtDataById(data).then(response => {
         if (response.status == 200) {
+            loading.value = false
             ElMessage({
                 message: '更新jwt信息成功',
                 type: 'success',
             })
-            // 等待1秒后刷新页面
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
+            // 重新获取数据
+            GetAccessProvider(tenantId.value);
         } else {
+            loading.value = false
             ElMessage({
                 message: '更新jwt信息失败',
             })

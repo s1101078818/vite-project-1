@@ -57,7 +57,7 @@ async function getGraphData() {
             // getToekn();
             // 等2秒
             setTimeout(() => {
-                router.push("/B2C");
+                router.push("/settings/B2C");
             }, 2000)
 
             // console.log("这里是1111111111111");

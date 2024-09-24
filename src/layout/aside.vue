@@ -2,8 +2,9 @@
     <el-row class="tac">
         <el-col :span="24">
             <h5 class="mb-2">统一配置管理</h5>
-            <el-menu :default-active="activeMenu" class="el-menu-vertical-demo" @select="handleSelect"
-                @open="handleOpen" @close="handleClose">
+            <el-menu :default-active="activeMenu" class="el-menu-vertical-demo" @select="handleSelect">
+                <!-- <el-menu :default-active="activeMenu" class="el-menu-vertical-demo" @select="handleSelect"
+                @open="handleOpen" @close="handleClose"> -->
                 <el-sub-menu index="1">
                     <template #title>
                         <el-icon><icon-menu /></el-icon>
@@ -20,7 +21,7 @@
                             <el-icon>
                                 <setting />
                             </el-icon>
-                            <span slot="title">B2C配置管理</span>
+                            <span slot="title">B2B配置管理</span>
                         </el-menu-item>
                     </el-menu-item-group>
                 </el-sub-menu>
@@ -87,10 +88,11 @@ const handleSelect = (index: string) => {
     router.push(index);
 };
 
-const handleOpen = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-}
+// const handleOpen = (key: string, keyPath: string[]) => {
+//     console.log(key, keyPath)
+// }
+// const handleClose = (key: string, keyPath: string[]) => {
+//     console.log(key, keyPath)
+// }
+
 </script>

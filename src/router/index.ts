@@ -9,10 +9,10 @@ const routes = [
         component: () => import("../views/login/index.vue"),
     },
     {
-        path: '/',
+        path: '/settings',
         component: Layout,
         children: [{
-            path: "/B2C",
+            path: "B2C",
             name: "B2C",
             meta: {
                 title: 'B2C',

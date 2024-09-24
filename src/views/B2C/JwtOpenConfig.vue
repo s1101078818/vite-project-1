@@ -40,10 +40,10 @@ const props = defineProps({
 });
 
 watch(() => props.jwtOpenConfig, (newVal) => {
-    console.log("JwtOpenConfig", JwtOpenConfig.value);
-    console.log('props.jwtOpenConfig changed:', toRaw(newVal));
+    // console.log("JwtOpenConfig", JwtOpenConfig.value);
+    // console.log('props.jwtOpenConfig changed:', toRaw(newVal));
     JwtOpenConfig.value = toRaw(newVal);
-    console.log('JwtOpenConfig updated:', JwtOpenConfig.value);
+    // console.log('JwtOpenConfig updated:', JwtOpenConfig.value);
 }, { deep: true, immediate: true });
 
 // 使用defineEmits注册一个自定义事件
@@ -51,6 +51,7 @@ const emit = defineEmits(["getJwtOpenConfig"])
 
 // 点击事件触发emit，去调用我们注册的自定义事件getValue,并传递value参数至父组件
 const transJwtOpenConfig = () => {
+    ElMessage.success('保存成功')
     emit("getJwtOpenConfig", JwtOpenConfig.value)
 }
 

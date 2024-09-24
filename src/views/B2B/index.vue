@@ -1,5 +1,5 @@
 <template>
-    <h3>编辑SaaS模板</h3>
+    <h3 v-loading.fullscreen.lock="loading">编辑SaaS模板</h3>
     <el-form :model="form" label-width="auto" style="max-width: 600px">
         <el-row :gutter="20">
             <el-col :span="12">
@@ -42,6 +42,10 @@
 import { ref } from 'vue'
 import { getSaaSAccessProviderTemplate } from '../../api/home'
 import { onMounted } from 'vue';
+import { ElLoading } from 'element-plus';
+
+const loading = ref(false)
+
 // do not use same name with ref
 const form = ref({
     azureTenantId: '',
@@ -104,7 +108,11 @@ const GetSaaSAccessProviderTemplate = () => {
 }
 
 onMounted(() => {
-    GetSaaSAccessProviderTemplate();
+    loading.value = true
+    setTimeout(() => {
+        loading.value = false
+    }, 500);
+    // GetSaaSAccessProviderTemplate();
 })
 
 </script>
