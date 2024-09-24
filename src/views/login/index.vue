@@ -132,9 +132,7 @@ const getNewToken = () => {
 }
 </script>
 
-<style>
-/* 背景图片要撑满整个屏幕且居中 */
-
+<style scoped>
 .title {
     font-size: 50px;
     color: black;

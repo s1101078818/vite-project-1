@@ -1,4 +1,4 @@
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createWebHistory, createRouter } from 'vue-router'
 import Layout from "../layout/index.vue"
 import { registerGuard } from "./Guard";
 
@@ -22,7 +22,7 @@ const routes = [
             component: () => import("../views/B2C/index.vue"),
         },
         {
-            path: "/B2B",
+            path: "B2B",
             name: "B2B",
             meta: {
                 title: 'B2B',
@@ -41,7 +41,7 @@ const routes = [
 ]
 
 const router = createRouter({
-    history: createMemoryHistory(),
+    history: createWebHistory(),
     routes,
 })
 

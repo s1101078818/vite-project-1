@@ -5,6 +5,7 @@ import router from './router';
 import { msalPlugin } from "./plugins/msalPlugin";
 import { msalInstance } from "./authConfig";
 import { AuthenticationResult, EventType } from "@azure/msal-browser";
+import 'element-plus/dist/index.css'
 
 const accounts = msalInstance.getAllAccounts();
 if (accounts.length > 0) {

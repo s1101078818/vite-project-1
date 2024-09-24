@@ -11,13 +11,13 @@
                         <span>系统管理</span>
                     </template>
                     <el-menu-item-group>
-                        <el-menu-item index="/B2C">
+                        <el-menu-item index="/settings/B2C">
                             <el-icon>
                                 <setting />
                             </el-icon>
                             <span slot="title">B2C配置管理</span>
                         </el-menu-item>
-                        <el-menu-item index="/B2B">
+                        <el-menu-item index="/settings/B2B">
                             <el-icon>
                                 <setting />
                             </el-icon>
@@ -82,7 +82,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const activeMenu = ref('/home');
+const activeMenu = ref('/settings/B2C');
 
 const handleSelect = (index: string) => {
     router.push(index);
