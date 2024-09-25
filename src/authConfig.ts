@@ -47,7 +47,7 @@ export const loginRequest = {
 };
 
 export const loginGetToken = {
-  scopes: ['api://6f72aa59-0dd0-4aa5-a7a0-f0cd3fab1744/user_impersonation']
+  scopes: ['api://4aa8c204-d224-4cc1-a328-c12a494883fd/all']
 }
 
 // Add here the endpoints for MS Graph API services you would like to use.
