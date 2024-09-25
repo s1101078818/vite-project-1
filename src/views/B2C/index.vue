@@ -191,6 +191,7 @@ const handleChange = (data: string) => {
 }
 
 const GetAccessProvider = (tenantId: string) => {
+    loading.value = true
     getAccessProvider(tenantId).then(response => {
         // 当response.data为空时，新增，不为空时，执行编辑
         if (response.data == null) {
@@ -231,7 +232,10 @@ const GetAccessProvider = (tenantId: string) => {
     }).catch(error => {
         console.log('There was a problem with your fetch operation:', error);
         // 在这里处理错误
-    });
+    }).finally(() => {
+        loading.value = false
+    })
+        ;
 }
 
 // 获得SaaS租户列表
