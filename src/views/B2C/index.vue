@@ -9,7 +9,8 @@
     <el-tabs v-model="activeName" class="B2C-tabs" style="margin-left: 20px;">
         <el-tab-pane label="B2C租户管理" name="first">
             <B2C :editForm="editForm" :isAdd="isAdd" :tenantId="tenantId" :jwtKeys="jwtKeys"
-                :jwtOpenConfig="jwtOpenConfig">
+                :jwtOpenConfig="jwtOpenConfig" @getNewJwtKeys="getNewJwtKeys"
+                @getNewJwtOpenConfig="getNewJwtOpenConfig">
             </B2C>
         </el-tab-pane>
         <el-tab-pane label="JwtKeys" name="second">
@@ -26,20 +27,10 @@ import { ref, onMounted } from 'vue'
 import B2C from '../B2C/B2C.vue'
 import JwtKeys from './JwtKeys.vue';
 import JwtOpenConfig from './JwtOpenConfig.vue';
-import { getAccessProvider, updateAccessProviderJwtDataById } from '../../api/home';
-import axios from 'axios';
-
+import { getAccessProvider, getAllAccessProvider, updateAccessProviderJwtDataById } from '../../api/home';
 
 const value = ref('')
 const loading = ref(false)
-
-const fullscreenLoading = ref(false)
-const openFullScreen1 = () => {
-    fullscreenLoading.value = true
-    setTimeout(() => {
-        fullscreenLoading.value = false
-    }, 2000)
-}
 
 interface ListItem {
     value: string
@@ -98,6 +89,8 @@ interface Data {
     isEnable: boolean;
     jwtKeys: JwtKey[];
     jwtOpenConfig: JwtOpenConfig;
+    jwtKeysUrl: string;
+    jwtOpenConfigUrl: string;
 }
 
 const form = ref<Data>({
@@ -136,12 +129,13 @@ const form = ref<Data>({
         id_token_signing_alg_values_supported: [],
         token_endpoint_auth_methods_supported: [],
         claims_supported: [],
-    }
+    },
+    jwtKeysUrl: '',
+    jwtOpenConfigUrl: '',
 })
 
 const editForm = ref({
     azureTenantId: '',
-    category: '',
     graphClientId: '',
     graphClientSecret: '',
     isEnable: true,
@@ -160,7 +154,9 @@ const editForm = ref({
     spaClientId: '',
     tenantId: '',
     webApiAud: '',
-    webApiClientId: ''
+    webApiClientId: '',
+    jwtKeysUrl: '',
+    jwtOpenConfigUrl: '',
 })
 
 const jwtKeys = ref<JwtKey[]>([])
@@ -195,7 +191,34 @@ const GetAccessProvider = (tenantId: string) => {
     getAccessProvider(tenantId).then(response => {
         // 当response.data为空时，新增，不为空时，执行编辑
         if (response.data == null) {
+            ElMessage.info('配置为空，请新增')
             isAdd.value = true
+            console.log("0000000000000000000000000000000000000000000000000000");
+            console.log(isAdd.value);
+            editForm.value = {
+                azureTenantId: '',
+                graphClientId: '',
+                graphClientSecret: '',
+                isEnable: true,
+                id: '',
+                policies: {
+                    apiScopes: [],
+                    authorities_editProfile_authority: '',
+                    authorities_signUpSignIn_authority: '',
+                    authorityDomain: '',
+                    clientId: '',
+                    names_editProfile: '',
+                    names_signUpSignIn: ''
+                },
+                spaApiScopes: [],
+                spaBindDomain: '',
+                spaClientId: '',
+                tenantId: tenantId,
+                webApiAud: '',
+                webApiClientId: '',
+                jwtKeysUrl: '',
+                jwtOpenConfigUrl: '',
+            }
             jwtKeys.value = [{
                 kid: '',
                 // @ts-ignore
@@ -220,6 +243,7 @@ const GetAccessProvider = (tenantId: string) => {
                 claims_supported: [],
             }
         } else {
+            ElMessage.info('存在配置，执行编辑')
             isAdd.value = false
             form.value = response.data
             jwtKeys.value = response.data.jwtKeys
@@ -235,46 +259,44 @@ const GetAccessProvider = (tenantId: string) => {
     }).finally(() => {
         loading.value = false
     })
-        ;
 }
 
 // 获得SaaS租户列表
 const getSaaSTenantList = () => {
     loading.value = true
-    const instance = axios.create({
-        baseURL: 'https://paas-mgw.apim.xmindit.com/saas-uuas/tenantlist', // 设置基础URL
-        timeout: 5000, // 设置请求超时时间
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'saas-uuas': '4604809207774a5d9aa18d5c8df88aac'
-        }
-    });
-    instance.post('', {}).then(response => {
-        // 在这里执行你的操作
-        // 将response.data赋值给providers
-        for (let i = 0; i < response.data.data.length; i++) {
-            // providers.push({
-            //     tenantId: response.data.data[i].id,
-            //     name: response.data.data[i].name,
-            // });
-            // 赋值给options
+    getAllAccessProvider().then(response => {
+        // 赋值给options
+        for (let i = 0; i < response.data.length; i++) {
             options.value.push({
-                value: response.data.data[i].id,
-                label: response.data.data[i].name
+                value: response.data[i].id,
+                label: response.data[i].name
             })
         }
+    }).catch(error => {
+        console.log('There was a problem with your fetch operation:', error);
+    }).finally(() => {
         loading.value = false
     })
 }
 
 const getJwtKeys = (value: any) => {
-    jwtKeys.value = [value];
+    jwtKeys.value = value;
+    // console.log("8888888888888888888888888");
+    // console.log(jwtKeys.value);
+}
+
+const getNewJwtKeys = (value: any) => {
+    jwtKeys.value = value;
     // console.log("8888888888888888888888888");
     // console.log(jwtKeys.value);
 }
 
 const getJwtOpenConfig = (value: any) => {
+    jwtOpenConfig.value = value;
+    // console.log(jwtOpenConfig.value);
+}
+
+const getNewJwtOpenConfig = (value: any) => {
     jwtOpenConfig.value = value;
     // console.log(jwtOpenConfig.value);
 }
@@ -299,6 +321,12 @@ const UpdateAccessProviderJwtDataById = () => {
                 message: '更新jwt信息失败',
             })
         }
+    }).catch(error => {
+        console.log('There was a problem with your fetch operation:', error);
+        loading.value = false
+        ElMessage.error("更新jwt信息失败")
+    }).finally(() => {
+        loading.value = false
     })
 }
 

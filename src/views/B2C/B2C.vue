@@ -1,30 +1,8 @@
 <template>
    <div>
       <el-container>
-         <!-- <el-header>
-            <el-dropdown split-button type="primary">
-               {{ buttonName }}
-               <template #dropdown>
-                  <el-dropdown-menu>
-                     <el-scrollbar height="400px">
-                        <el-dropdown-item v-for="provider in providers" :key="provider.tenantId"
-                           @click="handleClick(provider)">
-                           {{ provider.name }}
-                        </el-dropdown-item>
-                     </el-scrollbar>
-                  </el-dropdown-menu>
-               </template>
-</el-dropdown> -->
-         <!-- <el-button type="primary" @click="handleAdd">新增</el-button> -->
-         <!-- </el-header> -->
          <el-main class="main">
-            <!-- <div @click="handleClickPicture" v-if="!showForm">
-               <img src="../../assets/login.jpeg" style="width: 600px;" alt="Main Image" />
-            </div>
-            <h3 v-if="!providers.length && !showText">该接入商还未添加过配置，点击添加新配置</h3> -->
-            <!-- 编辑的表单 -->
-            <!-- <el-form v-else-if="showForm && !isAdd" :disabled="disabled"> -->
-            <el-form v-if="!isAdd" :model="EditForm" :rules="rules" ref="formRef">
+            <el-form v-if="!IsAdd" :model="EditForm" :rules="rules" ref="formRef">
                <h2 v-loading.fullscreen.lock="loading">编辑B2C配置</h2>
                <!-- 表单内容 -->
                <el-row :gutter="20">
@@ -49,6 +27,9 @@
                      <el-form-item label="TenantId" prop="tenantId">
                         <el-input v-model="EditForm.tenantId" disabled></el-input>
                      </el-form-item>
+                     <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
+                        <el-input v-model="EditForm.jwtKeysUrl"></el-input>
+                     </el-form-item>
                      <!-- 其他表单项 -->
 
                   </el-col>
@@ -69,61 +50,47 @@
                      <el-form-item label="WebApiClientId" prop="webApiClientId">
                         <el-input v-model="EditForm.webApiClientId"></el-input>
                      </el-form-item>
-                     <!-- <el-form-item label="ApplicationType">
-                        <el-input v-model="editForm.applicationType"></el-input>
-                     </el-form-item> -->
+                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
+                        <el-input v-model="EditForm.jwtOpenConfigUrl"></el-input>
+                     </el-form-item>
                   </el-col>
                </el-row>
                <h3>Polices</h3>
 
                <el-row :gutter="20">
                   <el-col :span="12">
-                     <el-form>
-                        <el-form-item label="clientId" prop="policies.clientId" :rules="{
-                           required: true, message: '请输入clientId', trigger: 'blur'
-                        }">
+                     <el-form :model="EditForm" :rules="rules" ref="formRef1">
+                        <el-form-item label="clientId" prop="policies.clientId">
                            <el-input v-model="EditForm.policies.clientId"></el-input>
                         </el-form-item>
-                        <el-form-item label="names_signUpSignIn" prop="policies.names_signUpSignIn" :rules="{
-                           required: true, message: '请输入names_signUpSignIn', trigger: 'blur'
-                        }">
+                        <el-form-item label="names_signUpSignIn" prop="policies.names_signUpSignIn">
                            <el-input v-model="EditForm.policies.names_signUpSignIn"></el-input>
                         </el-form-item>
-                        <el-form-item label="apiScopes" prop="policies.apiScopes" :rules="{
-                           required: true, message: '请输入apiScopes', trigger: 'blur'
-                        }">
+                        <el-form-item label="apiScopes" prop="policies.apiScopes">
                            <el-input v-model="EditForm.policies.apiScopes"></el-input>
                         </el-form-item>
                         <!-- 表单内容 -->
                      </el-form>
                   </el-col>
                   <el-col :span="12">
-                     <el-form>
-                        <el-form-item label="authorityDomain" prop="policies.authorityDomain" :rules="{
-                           required: true, message: '请输入authorityDomain', trigger: 'blur'
-                        }">
+                     <el-form :model="EditForm" :rules="rules" ref="formRef2">
+                        <el-form-item label="authorityDomain" prop="policies.authorityDomain">
                            <el-input v-model="EditForm.policies.authorityDomain"></el-input>
                         </el-form-item>
-                        <el-form-item label="names_editProfile" prop="policies.names_editProfile" :rules="{
-                           required: true, message: '请输入names_editProfile', trigger: 'blur'
-                        }">
+                        <el-form-item label="names_editProfile" prop="policies.names_editProfile">
                            <el-input v-model="EditForm.policies.names_editProfile"></el-input>
                         </el-form-item>
                         <!-- 表单内容 -->
                      </el-form>
                   </el-col>
                </el-row>
-               <el-form>
+               <el-form :model="EditForm" :rules="rules" ref="formRef3">
                   <el-form-item label="authorities_signUpSignIn_authority" style="margin-top: 10px;"
-                     prop="policies.authorities_signUpSignIn_authority" :rules="{
-                        required: true, message: '请输入authorities_signUpSignIn_authority', trigger: 'blur'
-                     }">
+                     prop="policies.authorities_signUpSignIn_authority">
                      <el-input v-model="EditForm.policies.authorities_signUpSignIn_authority"></el-input>
                   </el-form-item>
                   <el-form-item label="authorities_editProfile_authority"
-                     prop="policies.authorities_editProfile_authority" :rules="{
-                        required: true, message: '请输入authorities_editProfile_authority', trigger: 'blur'
-                     }">
+                     prop="policies.authorities_editProfile_authority">
                      <el-input v-model="EditForm.policies.authorities_editProfile_authority"></el-input>
                   </el-form-item>
                </el-form>
@@ -137,8 +104,8 @@
 
 
             <!-- 新增的表单 -->
-            <el-form v-else :model="addForm" :rules="rules1" ref="formRef1">
-               <h2>新增B2C配置</h2>
+            <el-form v-if="IsAdd" :model="addForm" :rules="rules1" ref="addFormRef">
+               <h2 v-loading.fullscreen.lock="loading">新增B2C配置</h2>
                <!-- 表单内容 -->
                <el-row :gutter="20">
                   <el-col :span="12">
@@ -163,6 +130,9 @@
                      <el-form-item label="TenantId" prop="tenantId">
                         <el-input v-model="addForm.tenantId" disabled></el-input>
                      </el-form-item>
+                     <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
+                        <el-input v-model="addForm.jwtKeysUrl"></el-input>
+                     </el-form-item>
                      <!-- 其他表单项 -->
 
                   </el-col>
@@ -183,61 +153,47 @@
                      <el-form-item label="WebApiClientId" prop="webApiClientId">
                         <el-input v-model="addForm.webApiClientId"></el-input>
                      </el-form-item>
-                     <!-- <el-form-item label="ApplicationType">
-                        <el-input v-model="editForm.applicationType"></el-input>
-                     </el-form-item> -->
+                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
+                        <el-input v-model="addForm.jwtOpenConfigUrl"></el-input>
+                     </el-form-item>
                   </el-col>
                </el-row>
                <h3>Polices</h3>
 
                <el-row :gutter="20">
                   <el-col :span="12">
-                     <el-form>
-                        <el-form-item label="clientId" prop="policies.clientId" :rules="{
-                           required: true, message: '请输入clientId', trigger: 'blur'
-                        }">
+                     <el-form :model="addForm" :rules="rules1" ref="addFormRef1">
+                        <el-form-item label="clientId" prop="policies.clientId">
                            <el-input v-model="addForm.policies.clientId"></el-input>
                         </el-form-item>
-                        <el-form-item label="names_signUpSignIn" prop="policies.names_signUpSignIn" :rules="{
-                           required: true, message: '请输入names_signUpSignIn', trigger: 'blur'
-                        }">
+                        <el-form-item label="names_signUpSignIn" prop="policies.names_signUpSignIn">
                            <el-input v-model="addForm.policies.names_signUpSignIn"></el-input>
                         </el-form-item>
-                        <el-form-item label="apiScopes" prop="policies.apiScopes" :rules="{
-                           required: true, message: '请输入apiScopes', trigger: 'blur'
-                        }">
+                        <el-form-item label="apiScopes" prop="policies.apiScopes">
                            <el-input v-model="addForm.policies.apiScopes"></el-input>
                         </el-form-item>
                         <!-- 表单内容 -->
                      </el-form>
                   </el-col>
                   <el-col :span="12">
-                     <el-form>
-                        <el-form-item label="authorityDomain" prop="policies.authorityDomain" :rules="{
-                           required: true, message: '请输入authorityDomain', trigger: 'blur'
-                        }">
+                     <el-form :model="addForm" :rules="rules1" ref="addFormRef2">
+                        <el-form-item label="authorityDomain" prop="policies.authorityDomain">
                            <el-input v-model="addForm.policies.authorityDomain"></el-input>
                         </el-form-item>
-                        <el-form-item label="names_editProfile" prop="policies.names_editProfile" :rules="{
-                           required: true, message: '请输入names_editProfile', trigger: 'blur'
-                        }">
+                        <el-form-item label="names_editProfile" prop="policies.names_editProfile">
                            <el-input v-model="addForm.policies.names_editProfile"></el-input>
                         </el-form-item>
                         <!-- 表单内容 -->
                      </el-form>
                   </el-col>
                </el-row>
-               <el-form>
+               <el-form :model="addForm" :rules="rules1" ref="addFormRef3">
                   <el-form-item label="authorities_signUpSignIn_authority" style="margin-top: 10px;"
-                     prop="policies.authorities_signUpSignIn_authority" :rules="{
-                        required: true, message: '请输入authorities_signUpSignIn_authority', trigger: 'blur'
-                     }">
+                     prop="policies.authorities_signUpSignIn_authority">
                      <el-input v-model="addForm.policies.authorities_signUpSignIn_authority"></el-input>
                   </el-form-item>
                   <el-form-item label="authorities_editProfile_authority"
-                     prop="policies.authorities_editProfile_authority" :rules="{
-                        required: true, message: '请输入authorities_editProfile_authority', trigger: 'blur'
-                     }">
+                     prop="policies.authorities_editProfile_authority">
                      <el-input v-model="addForm.policies.authorities_editProfile_authority"></el-input>
                   </el-form-item>
                </el-form>
@@ -248,8 +204,6 @@
                   </el-form-item>
                </el-form>
             </el-form>
-
-
          </el-main>
       </el-container>
    </div>
@@ -284,7 +238,8 @@ const EditForm = ref({
    tenantId: '',
    webApiAud: '',
    webApiClientId: '',
-   // applicationType: ''
+   jwtKeysUrl: '',
+   jwtOpenConfigUrl: '',
 })
 
 const addForm = ref({
@@ -309,7 +264,8 @@ const addForm = ref({
    tenantId: '',
    webApiAud: '',
    webApiClientId: '',
-   // applicationType: ''
+   jwtKeysUrl: '',
+   jwtOpenConfigUrl: '',
 })
 
 const rules = reactive({
@@ -340,9 +296,39 @@ const rules = reactive({
    webApiClientId: [
       { required: true, message: 'WebApiClientId不能为空', trigger: 'blur' }
    ],
+   'policies.clientId': [{
+      required: true, message: 'clientId不能为空', trigger: 'blur'
+   }],
+   'policies.authorityDomain': [{
+      required: true, message: 'authorityDomain不能为空', trigger: 'blur'
+   }],
+   'policies.authorities_signUpSignIn_authority': [{
+      required: true, message: 'authorities_signUpSignIn_authority不能为空', trigger: 'blur'
+   }],
+   'policies.names_signUpSignIn': [{
+      required: true, message: 'names_signUpSignIn不能为空', trigger: 'blur'
+   }],
+   'policies.names_editProfile': [{
+      required: true, message: 'names_editProfile不能为空', trigger: 'blur'
+   }],
+   'policies.authorities_editProfile_authority': [{
+      required: true, message: 'authorities_editProfile_authority不能为空', trigger: 'blur'
+   }],
+   'policies.apiScopes': [{
+      required: true, message: 'apiScopes不能为空', trigger: 'blur'
+   }],
+   jwtKeysUrl: [{
+      required: true, message: 'JwtKeysUrl不能为空', trigger: 'blur'
+   }],
+   jwtOpenConfigUrl: [{
+      required: true, message: 'JwtOpenConfigUrl不能为空', trigger: 'blur'
+   }]
 })
 
 const formRef = ref<InstanceType<typeof ElForm> | null>(null);
+const formRef1 = ref<InstanceType<typeof ElForm> | null>(null);
+const formRef2 = ref<InstanceType<typeof ElForm> | null>(null);
+const formRef3 = ref<InstanceType<typeof ElForm> | null>(null);
 
 const rules1 = reactive({
    azureTenantId: [
@@ -371,10 +357,40 @@ const rules1 = reactive({
    ],
    webApiClientId: [
       { required: true, message: 'WebApiClientId不能为空', trigger: 'blur' }
-   ]
+   ],
+   'policies.clientId': [{
+      required: true, message: 'clientId不能为空', trigger: 'blur'
+   }],
+   'policies.authorityDomain': [{
+      required: true, message: 'authorityDomain不能为空', trigger: 'blur'
+   }],
+   'policies.authorities_signUpSignIn_authority': [{
+      required: true, message: 'authorities_signUpSignIn_authority不能为空', trigger: 'blur'
+   }],
+   'policies.names_signUpSignIn': [{
+      required: true, message: 'names_signUpSignIn不能为空', trigger: 'blur'
+   }],
+   'policies.names_editProfile': [{
+      required: true, message: 'names_editProfile不能为空', trigger: 'blur'
+   }],
+   'policies.authorities_editProfile_authority': [{
+      required: true, message: 'authorities_editProfile_authority不能为空', trigger: 'blur'
+   }],
+   'policies.apiScopes': [{
+      required: true, message: 'apiScopes不能为空', trigger: 'blur'
+   }],
+   jwtKeysUrl: [{
+      required: true, message: 'JwtKeysUrl不能为空', trigger: 'blur'
+   }],
+   jwtOpenConfigUrl: [{
+      required: true, message: 'JwtOpenConfigUrl不能为空', trigger: 'blur'
+   }]
 })
 
-const formRef1 = ref<InstanceType<typeof ElForm> | null>(null);
+const addFormRef = ref<InstanceType<typeof ElForm> | null>(null);
+const addFormRef1 = ref<InstanceType<typeof ElForm> | null>(null);
+const addFormRef2 = ref<InstanceType<typeof ElForm> | null>(null);
+const addFormRef3 = ref<InstanceType<typeof ElForm> | null>(null);
 
 const JwtKeys = ref([
    {
@@ -438,10 +454,13 @@ watch(() => props.editForm, (newVal) => {
 }, { deep: true, immediate: true });
 
 watch(() => props.isAdd, (newVal) => {
-   // console.log("isAdd", IsAdd.value);
-   // console.log('props.isAdd changed:', toRaw(newVal));
+   console.log("isAdd", IsAdd.value);
+   console.log("在这里呢");
+
+   console.log('props.isAdd changed:', toRaw(newVal));
    IsAdd.value = toRaw(newVal);
-   // console.log('isAdd updated:', IsAdd.value);
+   console.log('我去你妈的:', IsAdd.value);
+   console.log('isAdd updated:', IsAdd.value);
    // 如果是新增，那么将tenantId赋值给addForm
    if (IsAdd.value) {
       addForm.value.id = TenantId.value
@@ -557,44 +576,64 @@ const data = ref({
       id_token_signing_alg_values_supported: [],
       token_endpoint_auth_methods_supported: [],
       claims_supported: [],
-   }
+   },
+   jwtKeysUrl: '',
+   jwtOpenConfigUrl: ''
 })
 
 const update = () => {
+   loading.value = true
    formRef.value?.validate((valid) => {
       if (valid) {
-         data.value = {
-            id: EditForm.value.id,
-            deployType: 0,
-            tenantId: EditForm.value.tenantId,
-            azureTenantId: EditForm.value.azureTenantId,
-            graphClientId: EditForm.value.graphClientId,
-            graphClientSecret: EditForm.value.graphClientSecret,
-            spaBindDomain: EditForm.value.spaBindDomain,
-            spaClientId: EditForm.value.spaClientId,
-            spaApiScopes: EditForm.value.spaApiScopes,
-            policies: {
-               clientId: EditForm.value.policies.clientId,
-               apiScopes: EditForm.value.policies.apiScopes,
-               authorityDomain: EditForm.value.policies.authorityDomain,
-               names_signUpSignIn: EditForm.value.policies.names_signUpSignIn,
-               names_editProfile: EditForm.value.policies.names_editProfile,
-               authorities_signUpSignIn_authority: EditForm.value.policies.authorities_signUpSignIn_authority,
-               authorities_editProfile_authority: EditForm.value.policies.authorities_editProfile_authority,
-            },
-            webApiClientId: EditForm.value.webApiClientId,
-            webApiAud: EditForm.value.webApiAud,
-            isEnable: EditForm.value.isEnable,
-            // @ts-ignore
-            jwtKeys: JwtKeys.value,
-            jwtOpenConfig: JwtOpenConfig.value,
-         }
+         formRef1.value?.validate((valid) => {
+            if (valid) {
+               formRef2.value?.validate((valid) => {
+                  if (valid) {
+                     formRef3.value?.validate((valid) => {
+                        if (valid) {
+                           data.value = {
+                              id: EditForm.value.id,
+                              deployType: 0,
+                              tenantId: EditForm.value.tenantId,
+                              azureTenantId: EditForm.value.azureTenantId,
+                              graphClientId: EditForm.value.graphClientId,
+                              graphClientSecret: EditForm.value.graphClientSecret,
+                              spaBindDomain: EditForm.value.spaBindDomain,
+                              spaClientId: EditForm.value.spaClientId,
+                              spaApiScopes: EditForm.value.spaApiScopes,
+                              policies: {
+                                 clientId: EditForm.value.policies.clientId,
+                                 apiScopes: EditForm.value.policies.apiScopes,
+                                 authorityDomain: EditForm.value.policies.authorityDomain,
+                                 names_signUpSignIn: EditForm.value.policies.names_signUpSignIn,
+                                 names_editProfile: EditForm.value.policies.names_editProfile,
+                                 authorities_signUpSignIn_authority: EditForm.value.policies.authorities_signUpSignIn_authority,
+                                 authorities_editProfile_authority: EditForm.value.policies.authorities_editProfile_authority,
+                              },
+                              webApiClientId: EditForm.value.webApiClientId,
+                              webApiAud: EditForm.value.webApiAud,
+                              isEnable: EditForm.value.isEnable,
+                              // @ts-ignore
+                              jwtKeys: JwtKeys.value,
+                              jwtOpenConfig: JwtOpenConfig.value,
+                              jwtKeysUrl: EditForm.value.jwtKeysUrl,
+                              jwtOpenConfigUrl: EditForm.value.jwtOpenConfigUrl,
+                           }
 
-         if (!Array.isArray(data.value.jwtKeys)) {
-            data.value.jwtKeys = [data.value.jwtKeys];
-         }
-         ElMessage.success('表单提交成功!');
-         UpdateAccessProvider(JSON.stringify(data.value));
+                           if (!Array.isArray(data.value.jwtKeys)) {
+                              data.value.jwtKeys = [data.value.jwtKeys];
+                           }
+                           ElMessage.success('表单提交成功!');
+                           loading.value = false;
+                           UpdateAccessProvider(JSON.stringify(data.value));
+
+                        }
+                     })
+                  }
+               })
+            }
+         })
+
       } else {
          ElMessage.error('请填写输入框!');
       }
@@ -603,37 +642,54 @@ const update = () => {
 }
 
 const add = () => {
-   formRef1.value?.validate((valid) => {
+   loading.value = true;
+   addFormRef.value?.validate((valid) => {
       if (valid) {
-         data.value = {
-            id: addForm.value.id,
-            deployType: 0,
-            tenantId: addForm.value.tenantId,
-            azureTenantId: addForm.value.azureTenantId,
-            graphClientId: addForm.value.graphClientId,
-            graphClientSecret: addForm.value.graphClientSecret,
-            spaBindDomain: addForm.value.spaBindDomain,
-            spaClientId: addForm.value.spaClientId,
-            spaApiScopes: Array.isArray(addForm.value.spaApiScopes) ? addForm.value.spaApiScopes : [addForm.value.spaApiScopes],
-            policies: {
-               clientId: addForm.value.policies.clientId,
-               apiScopes: Array.isArray(addForm.value.policies.apiScopes) ? addForm.value.policies.apiScopes : [addForm.value.policies.apiScopes],
-               authorityDomain: addForm.value.policies.authorityDomain,
-               names_signUpSignIn: addForm.value.policies.names_signUpSignIn,
-               names_editProfile: addForm.value.policies.names_editProfile,
-               authorities_signUpSignIn_authority: addForm.value.policies.authorities_signUpSignIn_authority,
-               authorities_editProfile_authority: addForm.value.policies.authorities_editProfile_authority,
-            },
-            webApiClientId: addForm.value.webApiClientId,
-            webApiAud: addForm.value.webApiAud,
-            isEnable: addForm.value.isEnable,
-            // @ts-ignore
-            jwtKeys: null,
-            // @ts-ignore
-            jwtOpenConfig: null,
-         }
-         // 将addForm.value.policies.apiScopes和addForm.value.spaApiScopes转为数组
-         AddAccessProvider(JSON.stringify(data.value));
+         addFormRef1.value?.validate((valid) => {
+            if (valid) {
+               addFormRef2.value?.validate((valid) => {
+                  if (valid) {
+                     addFormRef3.value?.validate((valid) => {
+                        if (valid) {
+                           data.value = {
+                              id: addForm.value.id,
+                              deployType: 0,
+                              tenantId: addForm.value.tenantId,
+                              azureTenantId: addForm.value.azureTenantId,
+                              graphClientId: addForm.value.graphClientId,
+                              graphClientSecret: addForm.value.graphClientSecret,
+                              spaBindDomain: addForm.value.spaBindDomain,
+                              spaClientId: addForm.value.spaClientId,
+                              spaApiScopes: Array.isArray(addForm.value.spaApiScopes) ? addForm.value.spaApiScopes : [addForm.value.spaApiScopes],
+                              policies: {
+                                 clientId: addForm.value.policies.clientId,
+                                 apiScopes: Array.isArray(addForm.value.policies.apiScopes) ? addForm.value.policies.apiScopes : [addForm.value.policies.apiScopes],
+                                 authorityDomain: addForm.value.policies.authorityDomain,
+                                 names_signUpSignIn: addForm.value.policies.names_signUpSignIn,
+                                 names_editProfile: addForm.value.policies.names_editProfile,
+                                 authorities_signUpSignIn_authority: addForm.value.policies.authorities_signUpSignIn_authority,
+                                 authorities_editProfile_authority: addForm.value.policies.authorities_editProfile_authority,
+                              },
+                              webApiClientId: addForm.value.webApiClientId,
+                              webApiAud: addForm.value.webApiAud,
+                              isEnable: addForm.value.isEnable,
+                              // @ts-ignore
+                              jwtKeys: null,
+                              // @ts-ignore
+                              jwtOpenConfig: null,
+                              jwtKeysUrl: addForm.value.jwtKeysUrl,
+                              jwtOpenConfigUrl: addForm.value.jwtOpenConfigUrl,
+                           }
+                           // 将addForm.value.policies.apiScopes和addForm.value.spaApiScopes转为数组
+                           loading.value = false;
+                           AddAccessProvider(JSON.stringify(data.value));
+
+                        }
+                     })
+                  }
+               })
+            }
+         })
       } else {
          ElMessage.error('请填写输入框!');
       }
@@ -666,15 +722,13 @@ const cancelEditForm = () => {
       tenantId: '',
       webApiAud: '',
       webApiClientId: '',
-      // applicationType: '',
+      jwtKeysUrl: '',
+      jwtOpenConfigUrl: '',
    }
-   // buttonName.value = '请选择接入商'
+
 }
 
 const cancelAddForm = () => {
-   // 处理表单取消逻辑
-   // showForm.value = false
-   // 清空表单
    addForm.value = {
       azureTenantId: '',
       category: '',
@@ -697,7 +751,19 @@ const cancelAddForm = () => {
       tenantId: TenantId.value,
       webApiAud: '',
       webApiClientId: '',
+      jwtKeysUrl: '',
+      jwtOpenConfigUrl: '',
    }
+}
+
+// 使用defineEmits注册一个自定义事件
+const emit = defineEmits(["getNewJwtKeys", "getNewJwtOpenConfig"])
+
+// 点击事件触发emit，去调用我们注册的自定义事件getValue,并传递value参数至父组件
+const transNewJwtKeys = () => {
+   ElMessage.success('保存成功')
+   emit("getNewJwtKeys", JwtKeys.value)
+   emit("getNewJwtOpenConfig", JwtOpenConfig.value)
 }
 
 const AddAccessProvider = (data: any) => {
@@ -710,8 +776,37 @@ const AddAccessProvider = (data: any) => {
          loading.value = false;
          ElMessage.success('新增成功');
          // 重新获取数据
-         GetAccessProvider(JSON.parse(data).tenantId);
          IsAdd.value = false
+         // console.log("00000000000000000000000000000");
+         // console.log(IsAdd.value);
+         GetAccessProvider(JSON.parse(data).tenantId);
+
+         addForm.value = {
+            azureTenantId: '',
+            category: '',
+            graphClientId: '',
+            graphClientSecret: '',
+            isEnable: true,
+            id: TenantId.value,
+            policies: {
+               apiScopes: [],
+               authorities_editProfile_authority: '',
+               authorities_signUpSignIn_authority: '',
+               authorityDomain: '',
+               clientId: '',
+               names_editProfile: '',
+               names_signUpSignIn: ''
+            },
+            spaApiScopes: [],
+            spaBindDomain: '',
+            spaClientId: '',
+            tenantId: TenantId.value,
+            webApiAud: '',
+            webApiClientId: '',
+            jwtKeysUrl: '',
+            jwtOpenConfigUrl: '',
+         }
+
       } else {
          loading.value = false;
          ElMessage.error('新增失败');
@@ -722,7 +817,6 @@ const AddAccessProvider = (data: any) => {
       loading.value = false;
    })
 }
-
 
 const UpdateAccessProvider = (data: any) => {
    loading.value = true;
@@ -755,9 +849,12 @@ const GetAccessProvider = (tenantId: string) => {
    getAccessProvider(tenantId).then(response => {
       // 当新增完后执行此方法，理应有值
       if (response.data != null) {
+         JwtKeys.value = response.data.jwtKeys
+         JwtOpenConfig.value = response.data.jwtOpenConfig
          delete response.data.jwtKeys
          delete response.data.jwtOpenConfig
          EditForm.value = response.data
+         transNewJwtKeys();
       } else {
          ElMessage.error('获取失败，新增有误');
       }

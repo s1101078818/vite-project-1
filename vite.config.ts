@@ -16,5 +16,16 @@ export default defineConfig({
     Components({
       resolvers: [ElementPlusResolver()],
     }),
-  ],
+  ]
+  // ,
+  // server: {
+  //   host: '0.0.0.0',
+  //   port: 5173,
+  //   proxy: {
+  //     '/api': {
+  //       target: 'http://192.168.31.142:7188/api',
+  //       changeOrigin: true,
+  //     }
+  //   }
+  // }
 })
