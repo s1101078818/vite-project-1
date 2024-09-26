@@ -76,6 +76,7 @@ interface JwtOpenConfig {
 interface Data {
     id: string;
     tenantId: string;
+    azureGraphArea: string;
     azureTenantId: string;
     graphClientId: string;
     graphClientSecret: string;
@@ -95,6 +96,7 @@ interface Data {
 const form = ref<Data>({
     id: '',
     tenantId: '',
+    azureGraphArea: '',
     azureTenantId: '',
     graphClientId: '',
     graphClientSecret: '',
@@ -138,6 +140,7 @@ const editForm = ref({
     graphClientSecret: '',
     isEnable: true,
     id: '',
+    azureGraphArea: '',
     policies: {
         apiScopes: [],
         authorities_editProfile_authority: '',
@@ -199,6 +202,7 @@ const GetAccessProvider = (tenantId: string) => {
                 graphClientSecret: '',
                 isEnable: true,
                 id: '',
+                azureGraphArea: '',
                 policies: {
                     apiScopes: [],
                     authorities_editProfile_authority: '',

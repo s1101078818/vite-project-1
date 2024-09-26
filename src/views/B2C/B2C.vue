@@ -15,6 +15,12 @@
                            </el-radio-group>
                         </el-form-item>
                      </el-form>
+                     <el-form-item label="AzureGraphArea" prop="azureGraphArea">
+                        <el-select v-model="EditForm.azureGraphArea" filterable style="width: 240px">
+                           <el-option v-for="item in options" :key="item.value" :label="item.label"
+                              :value="item.value" />
+                        </el-select>
+                     </el-form-item>
                      <el-form-item label="AzureTenantId" prop="azureTenantId">
                         <el-input v-model="EditForm.azureTenantId"></el-input>
                      </el-form-item>
@@ -31,9 +37,7 @@
                      <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
                         <el-input v-model="EditForm.jwtKeysUrl"></el-input>
                      </el-form-item>
-                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
-                        <el-input v-model="EditForm.jwtOpenConfigUrl"></el-input>
-                     </el-form-item>
+
                      <!-- 其他表单项 -->
 
                   </el-col>
@@ -54,7 +58,9 @@
                      <el-form-item label="WebApiClientId" prop="webApiClientId">
                         <el-input v-model="EditForm.webApiClientId"></el-input>
                      </el-form-item>
-
+                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
+                        <el-input v-model="EditForm.jwtOpenConfigUrl"></el-input>
+                     </el-form-item>
                   </el-col>
                </el-row>
                <h3>Polices</h3>
@@ -119,6 +125,12 @@
                            </el-radio-group>
                         </el-form-item>
                      </el-form>
+                     <el-form-item label="AzureGraphArea" prop="azureGraphArea">
+                        <el-select v-model="addForm.azureGraphArea" filterable style="width: 240px">
+                           <el-option v-for="item in options" :key="item.value" :label="item.label"
+                              :value="item.value" />
+                        </el-select>
+                     </el-form-item>
                      <el-form-item label="AzureTenantId" prop="azureTenantId">
                         <el-input v-model="addForm.azureTenantId"></el-input>
                      </el-form-item>
@@ -135,9 +147,7 @@
                      <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
                         <el-input v-model="addForm.jwtKeysUrl"></el-input>
                      </el-form-item>
-                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
-                        <el-input v-model="addForm.jwtOpenConfigUrl"></el-input>
-                     </el-form-item>
+
                      <!-- 其他表单项 -->
 
                   </el-col>
@@ -158,7 +168,9 @@
                      <el-form-item label="WebApiClientId" prop="webApiClientId">
                         <el-input v-model="addForm.webApiClientId"></el-input>
                      </el-form-item>
-
+                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
+                        <el-input v-model="addForm.jwtOpenConfigUrl"></el-input>
+                     </el-form-item>
                   </el-col>
                </el-row>
                <h3>Polices</h3>
@@ -220,12 +232,25 @@ import { ElForm } from 'element-plus';
 
 const loading = ref(false)
 
+interface ListItem {
+   value: string
+   label: string
+}
+
+const options = ref<ListItem[]>([
+   { value: 'AzureChina', label: 'AzureChina' },
+   { value: 'AzurePublicCloud', label: 'AzurePublicCloud' },
+   { value: 'AzureUSGovernment', label: 'AzureUSGovernment' },
+   { value: 'AzureGermany', label: 'AzureGermany' },
+])
+
 const EditForm = ref({
    azureTenantId: '',
    graphClientId: '',
    graphClientSecret: '',
    isEnable: true,
    id: '',
+   azureGraphArea: '',
    policies: {
       apiScopes: [],
       authorities_editProfile_authority: '',
@@ -252,6 +277,7 @@ const addForm = ref({
    graphClientSecret: '',
    isEnable: true,
    id: '',
+   azureGraphArea: '',
    policies: {
       apiScopes: [],
       authorities_editProfile_authority: '',
@@ -325,6 +351,9 @@ const rules = reactive({
    }],
    jwtOpenConfigUrl: [{
       required: true, message: 'JwtOpenConfigUrl不能为空', trigger: 'blur'
+   }],
+   azureGraphArea: [{
+      required: true, message: 'AzureGraphArea不能为空', trigger: 'blur'
    }]
 })
 
@@ -387,6 +416,9 @@ const rules1 = reactive({
    }],
    jwtOpenConfigUrl: [{
       required: true, message: 'JwtOpenConfigUrl不能为空', trigger: 'blur'
+   }],
+   azureGraphArea: [{
+      required: true, message: 'azureGraphArea不能为空', trigger: 'blur'
    }]
 })
 
@@ -602,6 +634,7 @@ const update = () => {
                               spaBindDomain: EditForm.value.spaBindDomain,
                               spaClientId: EditForm.value.spaClientId,
                               spaApiScopes: EditForm.value.spaApiScopes,
+                              azureGraphArea: EditForm.value.azureGraphArea,
                               policies: {
                                  clientId: EditForm.value.policies.clientId,
                                  apiScopes: EditForm.value.policies.apiScopes,
@@ -662,6 +695,7 @@ const add = () => {
                               spaBindDomain: addForm.value.spaBindDomain,
                               spaClientId: addForm.value.spaClientId,
                               spaApiScopes: Array.isArray(addForm.value.spaApiScopes) ? addForm.value.spaApiScopes : [addForm.value.spaApiScopes],
+                              azureGraphArea: addForm.value.azureGraphArea,
                               policies: {
                                  clientId: addForm.value.policies.clientId,
                                  apiScopes: Array.isArray(addForm.value.policies.apiScopes) ? addForm.value.policies.apiScopes : [addForm.value.policies.apiScopes],
@@ -708,6 +742,7 @@ const cancelEditForm = () => {
       graphClientSecret: '',
       isEnable: true,
       id: '',
+      azureGraphArea: '',
       policies: {
          apiScopes: [],
          authorities_editProfile_authority: '',
@@ -737,6 +772,7 @@ const cancelAddForm = () => {
       graphClientSecret: '',
       isEnable: true,
       id: TenantId.value,
+      azureGraphArea: '',
       policies: {
          apiScopes: [],
          authorities_editProfile_authority: '',
@@ -792,6 +828,7 @@ const AddAccessProvider = (data: any) => {
             graphClientSecret: '',
             isEnable: true,
             id: TenantId.value,
+            azureGraphArea: '',
             policies: {
                apiScopes: [],
                authorities_editProfile_authority: '',
