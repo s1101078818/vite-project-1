@@ -15,7 +15,7 @@ import { loginGetToken, loginRequest } from "../../authConfig"
 import { useMsal } from '../../api/login/useMsal';
 
 import { UserInfo } from "../../utils/UserInfo";
-import { reactive, watch } from "vue";
+import { onMounted, reactive, watch } from "vue";
 import { callMsGraph } from "../../utils/MsGraphApiCall";
 
 const { instance, inProgress } = useMsal();
@@ -130,6 +130,27 @@ const getNewToken = () => {
             console.log(error);
         });
 }
+
+function clearAllCookiesAndStorage(): void {
+    // 清空所有 cookies  
+    const cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;`;
+    }
+
+    // 清空 localStorage  
+    localStorage.clear();
+
+    // 清空 sessionStorage  
+    sessionStorage.clear();
+}
+
+onMounted(() => {
+    // 清空所有的存储
+    clearAllCookiesAndStorage();
+})
 </script>
 
 <style scoped>
