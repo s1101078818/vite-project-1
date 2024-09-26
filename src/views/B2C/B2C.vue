@@ -24,11 +24,15 @@
                      <el-form-item label="GraphClientSecret" prop="graphClientSecret">
                         <el-input v-model="EditForm.graphClientSecret"></el-input>
                      </el-form-item>
-                     <el-form-item label="TenantId" prop="tenantId">
+                     <!-- 要求页面不显示tenantId -->
+                     <!-- <el-form-item label="TenantId" prop="tenantId">
                         <el-input v-model="EditForm.tenantId" disabled></el-input>
-                     </el-form-item>
+                     </el-form-item> -->
                      <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
                         <el-input v-model="EditForm.jwtKeysUrl"></el-input>
+                     </el-form-item>
+                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
+                        <el-input v-model="EditForm.jwtOpenConfigUrl"></el-input>
                      </el-form-item>
                      <!-- 其他表单项 -->
 
@@ -50,9 +54,7 @@
                      <el-form-item label="WebApiClientId" prop="webApiClientId">
                         <el-input v-model="EditForm.webApiClientId"></el-input>
                      </el-form-item>
-                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
-                        <el-input v-model="EditForm.jwtOpenConfigUrl"></el-input>
-                     </el-form-item>
+
                   </el-col>
                </el-row>
                <h3>Polices</h3>
@@ -126,12 +128,15 @@
                      <el-form-item label="GraphClientSecret" prop="graphClientSecret">
                         <el-input v-model="addForm.graphClientSecret"></el-input>
                      </el-form-item>
-
-                     <el-form-item label="TenantId" prop="tenantId">
+                     <!-- 要求页面不显示tenantId -->
+                     <!-- <el-form-item label="TenantId" prop="tenantId">
                         <el-input v-model="addForm.tenantId" disabled></el-input>
-                     </el-form-item>
+                     </el-form-item> -->
                      <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
                         <el-input v-model="addForm.jwtKeysUrl"></el-input>
+                     </el-form-item>
+                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
+                        <el-input v-model="addForm.jwtOpenConfigUrl"></el-input>
                      </el-form-item>
                      <!-- 其他表单项 -->
 
@@ -153,9 +158,7 @@
                      <el-form-item label="WebApiClientId" prop="webApiClientId">
                         <el-input v-model="addForm.webApiClientId"></el-input>
                      </el-form-item>
-                     <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
-                        <el-input v-model="addForm.jwtOpenConfigUrl"></el-input>
-                     </el-form-item>
+
                   </el-col>
                </el-row>
                <h3>Polices</h3>
@@ -542,7 +545,6 @@ watch(() => props.jwtOpenConfig, (newVal) => {
 
 const data = ref({
    id: '',
-   deployType: 0,
    tenantId: '',
    azureTenantId: '',
    graphClientId: '',
@@ -593,7 +595,6 @@ const update = () => {
                         if (valid) {
                            data.value = {
                               id: EditForm.value.id,
-                              deployType: 0,
                               tenantId: EditForm.value.tenantId,
                               azureTenantId: EditForm.value.azureTenantId,
                               graphClientId: EditForm.value.graphClientId,
@@ -636,6 +637,7 @@ const update = () => {
 
       } else {
          ElMessage.error('请填写输入框!');
+         loading.value = false;
       }
       return;
    });
@@ -653,7 +655,6 @@ const add = () => {
                         if (valid) {
                            data.value = {
                               id: addForm.value.id,
-                              deployType: 0,
                               tenantId: addForm.value.tenantId,
                               azureTenantId: addForm.value.azureTenantId,
                               graphClientId: addForm.value.graphClientId,
@@ -757,13 +758,17 @@ const cancelAddForm = () => {
 }
 
 // 使用defineEmits注册一个自定义事件
-const emit = defineEmits(["getNewJwtKeys", "getNewJwtOpenConfig"])
+const emit = defineEmits(["getNewJwtKeys", "getNewJwtOpenConfig", "getNewAdd"])
 
 // 点击事件触发emit，去调用我们注册的自定义事件getValue,并传递value参数至父组件
 const transNewJwtKeys = () => {
    ElMessage.success('保存成功')
    emit("getNewJwtKeys", JwtKeys.value)
    emit("getNewJwtOpenConfig", JwtOpenConfig.value)
+}
+
+const transNewAdd = () => {
+   emit("getNewAdd", IsAdd.value);
 }
 
 const AddAccessProvider = (data: any) => {
@@ -777,8 +782,7 @@ const AddAccessProvider = (data: any) => {
          ElMessage.success('新增成功');
          // 重新获取数据
          IsAdd.value = false
-         // console.log("00000000000000000000000000000");
-         // console.log(IsAdd.value);
+         transNewAdd();
          GetAccessProvider(JSON.parse(data).tenantId);
 
          addForm.value = {
@@ -836,9 +840,6 @@ const UpdateAccessProvider = (data: any) => {
    }).catch(error => {
       loading.value = false;
       ElMessage.error('修改失败');
-      setTimeout(() => {
-         location.reload();
-      }, 1000);
       console.log(error);
    }).finally(() => {
       loading.value = false;

@@ -9,8 +9,8 @@
     <el-tabs v-model="activeName" class="B2C-tabs" style="margin-left: 20px;">
         <el-tab-pane label="B2C租户管理" name="first">
             <B2C :editForm="editForm" :isAdd="isAdd" :tenantId="tenantId" :jwtKeys="jwtKeys"
-                :jwtOpenConfig="jwtOpenConfig" @getNewJwtKeys="getNewJwtKeys"
-                @getNewJwtOpenConfig="getNewJwtOpenConfig">
+                :jwtOpenConfig="jwtOpenConfig" @getNewJwtKeys="getNewJwtKeys" @getNewJwtOpenConfig="getNewJwtOpenConfig"
+                @getNewAdd="getNewAdd">
             </B2C>
         </el-tab-pane>
         <el-tab-pane label="JwtKeys" name="second">
@@ -75,7 +75,6 @@ interface JwtOpenConfig {
 
 interface Data {
     id: string;
-    deployType: number;
     tenantId: string;
     azureTenantId: string;
     graphClientId: string;
@@ -95,7 +94,6 @@ interface Data {
 
 const form = ref<Data>({
     id: '',
-    deployType: 0,
     tenantId: '',
     azureTenantId: '',
     graphClientId: '',
@@ -299,6 +297,10 @@ const getJwtOpenConfig = (value: any) => {
 const getNewJwtOpenConfig = (value: any) => {
     jwtOpenConfig.value = value;
     // console.log(jwtOpenConfig.value);
+}
+
+const getNewAdd = (value: any) => {
+    isAdd.value = value;
 }
 
 const UpdateAccessProviderJwtDataById = () => {
