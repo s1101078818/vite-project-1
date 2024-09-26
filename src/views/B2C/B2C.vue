@@ -21,6 +21,9 @@
                               :value="item.value" />
                         </el-select>
                      </el-form-item>
+                     <el-form-item label="AzureGraphIssuer" prop="azureGraphIssuer">
+                        <el-input v-model="EditForm.azureGraphIssuer"></el-input>
+                     </el-form-item>
                      <el-form-item label="AzureTenantId" prop="azureTenantId">
                         <el-input v-model="EditForm.azureTenantId"></el-input>
                      </el-form-item>
@@ -131,6 +134,9 @@
                               :value="item.value" />
                         </el-select>
                      </el-form-item>
+                     <el-form-item label="AzureGraphIssuer" prop="azureGraphIssuer">
+                        <el-input v-model="addForm.azureGraphIssuer"></el-input>
+                     </el-form-item>
                      <el-form-item label="AzureTenantId" prop="azureTenantId">
                         <el-input v-model="addForm.azureTenantId"></el-input>
                      </el-form-item>
@@ -240,7 +246,7 @@ interface ListItem {
 const options = ref<ListItem[]>([
    { value: 'AzureChina', label: 'AzureChina' },
    { value: 'AzurePublicCloud', label: 'AzurePublicCloud' },
-   { value: 'AzureUSGovernment', label: 'AzureUSGovernment' },
+   { value: 'AzureGovernment', label: 'AzureGovernment' },
    { value: 'AzureGermany', label: 'AzureGermany' },
 ])
 
@@ -251,6 +257,7 @@ const EditForm = ref({
    isEnable: true,
    id: '',
    azureGraphArea: '',
+   azureGraphIssuer: '',
    policies: {
       apiScopes: [],
       authorities_editProfile_authority: '',
@@ -278,6 +285,7 @@ const addForm = ref({
    isEnable: true,
    id: '',
    azureGraphArea: '',
+   azureGraphIssuer: '',
    policies: {
       apiScopes: [],
       authorities_editProfile_authority: '',
@@ -354,6 +362,9 @@ const rules = reactive({
    }],
    azureGraphArea: [{
       required: true, message: 'AzureGraphArea不能为空', trigger: 'blur'
+   }],
+   azureGraphIssuer: [{
+      required: true, message: 'AzureGraphIssuer不能为空', trigger: 'blur'
    }]
 })
 
@@ -419,6 +430,9 @@ const rules1 = reactive({
    }],
    azureGraphArea: [{
       required: true, message: 'azureGraphArea不能为空', trigger: 'blur'
+   }],
+   azureGraphIssuer: [{
+      required: true, message: 'azureGraphIssuer不能为空', trigger: 'blur'
    }]
 })
 
@@ -584,6 +598,8 @@ const data = ref({
    spaBindDomain: '',
    spaClientId: '',
    spaApiScopes: [],
+   azureGraphArea: '',
+   azureGraphIssuer: '',
    policies: {
       clientId: '',
       apiScopes: [],
@@ -635,6 +651,7 @@ const update = () => {
                               spaClientId: EditForm.value.spaClientId,
                               spaApiScopes: EditForm.value.spaApiScopes,
                               azureGraphArea: EditForm.value.azureGraphArea,
+                              azureGraphIssuer: EditForm.value.azureGraphIssuer,
                               policies: {
                                  clientId: EditForm.value.policies.clientId,
                                  apiScopes: EditForm.value.policies.apiScopes,
@@ -696,6 +713,7 @@ const add = () => {
                               spaClientId: addForm.value.spaClientId,
                               spaApiScopes: Array.isArray(addForm.value.spaApiScopes) ? addForm.value.spaApiScopes : [addForm.value.spaApiScopes],
                               azureGraphArea: addForm.value.azureGraphArea,
+                              azureGraphIssuer: addForm.value.azureGraphIssuer,
                               policies: {
                                  clientId: addForm.value.policies.clientId,
                                  apiScopes: Array.isArray(addForm.value.policies.apiScopes) ? addForm.value.policies.apiScopes : [addForm.value.policies.apiScopes],
@@ -743,6 +761,7 @@ const cancelEditForm = () => {
       isEnable: true,
       id: '',
       azureGraphArea: '',
+      azureGraphIssuer: '',
       policies: {
          apiScopes: [],
          authorities_editProfile_authority: '',
@@ -773,6 +792,7 @@ const cancelAddForm = () => {
       isEnable: true,
       id: TenantId.value,
       azureGraphArea: '',
+      azureGraphIssuer: '',
       policies: {
          apiScopes: [],
          authorities_editProfile_authority: '',
@@ -829,6 +849,7 @@ const AddAccessProvider = (data: any) => {
             isEnable: true,
             id: TenantId.value,
             azureGraphArea: '',
+            azureGraphIssuer: '',
             policies: {
                apiScopes: [],
                authorities_editProfile_authority: '',

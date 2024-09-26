@@ -77,6 +77,7 @@ interface Data {
     id: string;
     tenantId: string;
     azureGraphArea: string;
+    azureGraphIssuer: string;
     azureTenantId: string;
     graphClientId: string;
     graphClientSecret: string;
@@ -97,6 +98,7 @@ const form = ref<Data>({
     id: '',
     tenantId: '',
     azureGraphArea: '',
+    azureGraphIssuer: '',
     azureTenantId: '',
     graphClientId: '',
     graphClientSecret: '',
@@ -141,6 +143,7 @@ const editForm = ref({
     isEnable: true,
     id: '',
     azureGraphArea: '',
+    azureGraphIssuer: '',
     policies: {
         apiScopes: [],
         authorities_editProfile_authority: '',
@@ -203,6 +206,7 @@ const GetAccessProvider = (tenantId: string) => {
                 isEnable: true,
                 id: '',
                 azureGraphArea: '',
+                azureGraphIssuer: '',
                 policies: {
                     apiScopes: [],
                     authorities_editProfile_authority: '',
