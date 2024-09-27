@@ -714,15 +714,17 @@ const update = () => {
                                        loading.value = false;
                                        ElMessage.success('JwtKeysUrl和jwtOpenConfigUrl校验成功!');
                                        UpdateAccessProvider(JSON.stringify(data.value));
-                                    } else {
-                                       loading.value = false;
-                                       ElMessage.error('jwtOpenConfigUrl访问失败!');
                                     }
+                                 }).catch((error) => {
+                                    loading.value = false;
+                                    ElMessage.error(error)
+                                    ElMessage.error('jwtOpenConfigUrl访问失败!');
                                  })
-                              } else {
-                                 loading.value = false;
-                                 ElMessage.error('jwtKeysUrl访问失败!');
                               }
+                           }).catch((error) => {
+                              loading.value = false;
+                              ElMessage.error(error)
+                              ElMessage.error('jwtKeysUrl访问失败!');
                            })
                            // loading.value = false;
                            // UpdateAccessProvider(JSON.stringify(data.value));
@@ -803,16 +805,19 @@ const add = () => {
                                        loading.value = false;
                                        ElMessage.success('JwtKeysUrl和jwtOpenConfigUrl校验成功!');
                                        AddAccessProvider(JSON.stringify(data.value));
-                                    } else {
-                                       loading.value = false;
-                                       ElMessage.error('jwtOpenConfigUrl访问失败!');
                                     }
+                                 }).catch((error) => {
+                                    loading.value = false;
+                                    ElMessage.error(error)
+                                    ElMessage.error('jwtOpenConfigUrl访问失败!');
                                  })
-                              } else {
-                                 loading.value = false;
-                                 ElMessage.error('jwtKeysUrl访问失败!');
                               }
+                           }).catch((error) => {
+                              loading.value = false;
+                              ElMessage.error(error)
+                              ElMessage.error('jwtKeysUrl访问失败!');
                            })
+
                            // loading.value = false;
                            // AddAccessProvider(JSON.stringify(data.value));
 
@@ -953,6 +958,8 @@ const AddAccessProvider = (data: any) => {
          ElMessage.error('新增失败');
       }
    }).catch(error => {
+      ElMessage.error(error)
+      ElMessage.error('新增失败');
       console.log(error);
    }).finally(() => {
       loading.value = false;
@@ -1000,6 +1007,7 @@ const GetAccessProvider = (tenantId: string) => {
          ElMessage.error('获取失败，新增有误');
       }
    }).catch(error => {
+      ElMessage.error('获取失败，新增有误');
       console.log('There was a problem with your fetch operation:', error);
       // 在这里处理错误
    });

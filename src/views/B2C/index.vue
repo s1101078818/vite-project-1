@@ -263,6 +263,7 @@ const GetAccessProvider = (tenantId: string) => {
             editForm.value = response.data
         }
     }).catch(error => {
+        ElMessage.error(error)
         console.log('There was a problem with your fetch operation:', error);
         // 在这里处理错误
     }).finally(() => {
@@ -282,6 +283,8 @@ const getSaaSTenantList = () => {
             })
         }
     }).catch(error => {
+        ElMessage.error(error)
+        ElMessage.error("获取SaaS租户列表失败")
         console.log('There was a problem with your fetch operation:', error);
     }).finally(() => {
         loading.value = false
@@ -330,9 +333,9 @@ const UpdateAccessProviderJwtDataById = () => {
             GetAccessProvider(tenantId.value);
         } else {
             loading.value = false
-            ElMessage({
-                message: '更新jwt信息失败',
-            })
+            // @ts-ignore
+            ElMessage.error(response.message)
+            ElMessage.error("更新jwt信息失败")
         }
     }).catch(error => {
         console.log('There was a problem with your fetch operation:', error);
