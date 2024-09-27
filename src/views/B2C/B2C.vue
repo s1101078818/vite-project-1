@@ -786,7 +786,7 @@ const add = () => {
 
                            // 序列化jwtOpenConfig和policies
                            // @ts-ignore
-                           data.value.jwtOpenConfig = JSON.stringify(data.value.jwtOpenConfig);
+                           // data.value.jwtOpenConfig = JSON.stringify(data.value.jwtOpenConfig);
                            // @ts-ignore
                            data.value.policies = JSON.stringify(data.value.policies);
 
