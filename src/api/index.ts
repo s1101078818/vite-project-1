@@ -2,8 +2,9 @@ import axios from 'axios';
 
 // 创建axios实例
 const instance = axios.create({
-    baseURL: 'https://lyfirsttest.azurewebsites.net/api', // 设置基础URL
-    timeout: 5000, // 设置请求超时时间
+    baseURL: 'https://lyfirsttest.azurewebsites.net/api/',
+    // baseURL: 'http://192.168.31.142:7188/api/', // 设置基础URL
+    timeout: 20000, // 设置请求超时时间
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
