@@ -57,3 +57,4 @@ export const getSaaSAccessProviderTemplate = () => {
 export const updateAccessProviderJwtDataById = (params: any) => {
     return axios.post('/UpdateAccessProviderJwtDataById', params);
 }
+
