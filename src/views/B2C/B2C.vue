@@ -37,8 +37,8 @@
                      <!-- <el-form-item label="TenantId" prop="tenantId">
                         <el-input v-model="EditForm.tenantId" disabled></el-input>
                      </el-form-item> -->
-                     <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
-                        <el-input v-model="EditForm.jwtKeysUrl"></el-input>
+                     <el-form-item label="SPAApiScopes" prop="spaApiScopes">
+                        <el-input v-model="EditForm.spaApiScopes"></el-input>
                      </el-form-item>
 
                      <!-- 其他表单项 -->
@@ -46,9 +46,7 @@
                   </el-col>
                   <el-col :span="12">
                      <!-- 其他表单项 -->
-                     <el-form-item label="SPAApiScopes" prop="spaApiScopes">
-                        <el-input v-model="EditForm.spaApiScopes"></el-input>
-                     </el-form-item>
+
                      <el-form-item label="SPABindDomain" prop="spaBindDomain">
                         <el-input v-model="EditForm.spaBindDomain"></el-input>
                      </el-form-item>
@@ -61,12 +59,15 @@
                      <el-form-item label="WebApiClientId" prop="webApiClientId">
                         <el-input v-model="EditForm.webApiClientId"></el-input>
                      </el-form-item>
+                     <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
+                        <el-input v-model="EditForm.jwtKeysUrl"></el-input>
+                     </el-form-item>
                      <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
                         <el-input v-model="EditForm.jwtOpenConfigUrl"></el-input>
                      </el-form-item>
                   </el-col>
                </el-row>
-               <h3>Polices</h3>
+               <h3>SPAPolices</h3>
 
                <el-row :gutter="20">
                   <el-col :span="12">
@@ -150,8 +151,8 @@
                      <!-- <el-form-item label="TenantId" prop="tenantId">
                         <el-input v-model="addForm.tenantId" disabled></el-input>
                      </el-form-item> -->
-                     <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
-                        <el-input v-model="addForm.jwtKeysUrl"></el-input>
+                     <el-form-item label="SPAApiScopes" prop="spaApiScopes">
+                        <el-input v-model="addForm.spaApiScopes"></el-input>
                      </el-form-item>
 
                      <!-- 其他表单项 -->
@@ -159,9 +160,7 @@
                   </el-col>
                   <el-col :span="12">
                      <!-- 其他表单项 -->
-                     <el-form-item label="SPAApiScopes" prop="spaApiScopes">
-                        <el-input v-model="addForm.spaApiScopes"></el-input>
-                     </el-form-item>
+
                      <el-form-item label="SPABindDomain" prop="spaBindDomain">
                         <el-input v-model="addForm.spaBindDomain"></el-input>
                      </el-form-item>
@@ -174,12 +173,15 @@
                      <el-form-item label="WebApiClientId" prop="webApiClientId">
                         <el-input v-model="addForm.webApiClientId"></el-input>
                      </el-form-item>
+                     <el-form-item label="JwtKeysUrl" prop="jwtKeysUrl">
+                        <el-input v-model="addForm.jwtKeysUrl"></el-input>
+                     </el-form-item>
                      <el-form-item label="JwtOpenConfigUrl" prop="jwtOpenConfigUrl">
                         <el-input v-model="addForm.jwtOpenConfigUrl"></el-input>
                      </el-form-item>
                   </el-col>
                </el-row>
-               <h3>Polices</h3>
+               <h3>SPAPolices</h3>
 
                <el-row :gutter="20">
                   <el-col :span="12">
@@ -231,10 +233,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch, watchEffect } from 'vue'
 import { getAccessProvider, addAccessProvider, updateAccessProvider } from '../../api/home';
 import { toRaw } from 'vue';
 import { ElForm } from 'element-plus';
+import axios from 'axios';
 
 const loading = ref(false)
 
@@ -277,6 +280,14 @@ const EditForm = ref({
    jwtOpenConfigUrl: '',
 })
 
+watch(() => EditForm.value.spaClientId, (newVal) => {
+   EditForm.value.policies.clientId = newVal
+})
+
+watch(() => EditForm.value.spaApiScopes, (newVal) => {
+   EditForm.value.policies.apiScopes = newVal
+})
+
 const addForm = ref({
    azureTenantId: '',
    category: '',
@@ -303,6 +314,14 @@ const addForm = ref({
    webApiClientId: '',
    jwtKeysUrl: '',
    jwtOpenConfigUrl: '',
+})
+
+watch(() => addForm.value.spaClientId, (newVal) => {
+   addForm.value.policies.clientId = newVal
+})
+
+watch(() => addForm.value.spaApiScopes, (newVal) => {
+   addForm.value.policies.apiScopes = newVal
 })
 
 const rules = reactive({
@@ -671,13 +690,42 @@ const update = () => {
                               jwtOpenConfigUrl: EditForm.value.jwtOpenConfigUrl,
                            }
 
+                           // 序列化jwtOpenConfig和policies
+                           // @ts-ignore
+                           data.value.jwtOpenConfig = JSON.stringify(data.value.jwtOpenConfig);
+                           // @ts-ignore
+                           data.value.policies = JSON.stringify(data.value.policies);
+
                            if (!Array.isArray(data.value.jwtKeys)) {
                               data.value.jwtKeys = [data.value.jwtKeys];
                            }
                            ElMessage.success('表单提交成功!');
-                           loading.value = false;
-                           UpdateAccessProvider(JSON.stringify(data.value));
-
+                           // 这里先进行下两个URL的校验，看是否能访问到
+                           axios.get(data.value.jwtKeysUrl, {
+                              timeout: 10000
+                           }
+                           ).then((res) => {
+                              // @ts-ignore
+                              if (res.status == 200) {
+                                 axios.get(data.value.jwtOpenConfigUrl, {
+                                    timeout: 10000
+                                 }).then((res) => {
+                                    if (res.status == 200) {
+                                       loading.value = false;
+                                       ElMessage.success('JwtKeysUrl和jwtOpenConfigUrl校验成功!');
+                                       UpdateAccessProvider(JSON.stringify(data.value));
+                                    } else {
+                                       loading.value = false;
+                                       ElMessage.error('jwtOpenConfigUrl访问失败!');
+                                    }
+                                 })
+                              } else {
+                                 loading.value = false;
+                                 ElMessage.error('jwtKeysUrl访问失败!');
+                              }
+                           })
+                           // loading.value = false;
+                           // UpdateAccessProvider(JSON.stringify(data.value));
                         }
                      })
                   }
@@ -733,9 +781,40 @@ const add = () => {
                               jwtKeysUrl: addForm.value.jwtKeysUrl,
                               jwtOpenConfigUrl: addForm.value.jwtOpenConfigUrl,
                            }
+
+                           // 序列化jwtOpenConfig和policies
+                           // @ts-ignore
+                           data.value.jwtOpenConfig = JSON.stringify(data.value.jwtOpenConfig);
+                           // @ts-ignore
+                           data.value.policies = JSON.stringify(data.value.policies);
+
                            // 将addForm.value.policies.apiScopes和addForm.value.spaApiScopes转为数组
-                           loading.value = false;
-                           AddAccessProvider(JSON.stringify(data.value));
+
+                           axios.get(data.value.jwtKeysUrl, {
+                              timeout: 10000
+                           }
+                           ).then((res) => {
+                              // @ts-ignore
+                              if (res.status == 200) {
+                                 axios.get(data.value.jwtOpenConfigUrl, {
+                                    timeout: 10000
+                                 }).then((res) => {
+                                    if (res.status == 200) {
+                                       loading.value = false;
+                                       ElMessage.success('JwtKeysUrl和jwtOpenConfigUrl校验成功!');
+                                       AddAccessProvider(JSON.stringify(data.value));
+                                    } else {
+                                       loading.value = false;
+                                       ElMessage.error('jwtOpenConfigUrl访问失败!');
+                                    }
+                                 })
+                              } else {
+                                 loading.value = false;
+                                 ElMessage.error('jwtKeysUrl访问失败!');
+                              }
+                           })
+                           // loading.value = false;
+                           // AddAccessProvider(JSON.stringify(data.value));
 
                         }
                      })
@@ -908,6 +987,9 @@ const GetAccessProvider = (tenantId: string) => {
    getAccessProvider(tenantId).then(response => {
       // 当新增完后执行此方法，理应有值
       if (response.data != null) {
+         // 反序列化jwtOpenConfig和policies
+         response.data.jwtOpenConfig = JSON.parse(response.data.jwtOpenConfig)
+         response.data.policies = JSON.parse(response.data.policies)
          JwtKeys.value = response.data.jwtKeys
          JwtOpenConfig.value = response.data.jwtOpenConfig
          delete response.data.jwtKeys

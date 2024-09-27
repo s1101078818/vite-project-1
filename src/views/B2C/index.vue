@@ -253,6 +253,9 @@ const GetAccessProvider = (tenantId: string) => {
             isAdd.value = false
             form.value = response.data
             jwtKeys.value = response.data.jwtKeys
+            // 反序列化jwtOpenConfig和policies
+            response.data.jwtOpenConfig = JSON.parse(response.data.jwtOpenConfig)
+            response.data.policies = JSON.parse(response.data.policies)
             jwtOpenConfig.value = response.data.jwtOpenConfig
             // response.data去除jwtKeys和jwtOpenConfig
             delete response.data.jwtKeys
