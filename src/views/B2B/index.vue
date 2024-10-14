@@ -42,7 +42,6 @@
 import { ref } from 'vue'
 import { getSaaSAccessProviderTemplate } from '../../api/home'
 import { onMounted } from 'vue';
-import { ElLoading } from 'element-plus';
 
 const loading = ref(false)
 
