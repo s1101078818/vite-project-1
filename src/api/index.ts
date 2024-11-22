@@ -2,6 +2,7 @@ import axios from "axios";
 
 // 创建axios实例
 const instance = axios.create({
+  // 卢铀改过资源
   baseURL: "https://xmindb2cfunction.azurewebsites.net/api/",
   //   baseURL: "http://192.168.31.142:7188/api/", // 设置基础URL
   timeout: 20000, // 设置请求超时时间
